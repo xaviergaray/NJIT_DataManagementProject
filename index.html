@@ -1,10 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Newark Medical Associates - Patient Management</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-
+    <div class="container">
+        <h1>Newark Medical Associates</h1>
+        <h2>Insert a New Patient</h2>
+        <form action="/add_patient" method="post">
+            <input type="text" name="name" placeholder="Name" required>
+            <input type="date" name="dob" placeholder="DOB" required>
+            <input type="text" name="contact" placeholder="Contact Info" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 </body>
 </html>
