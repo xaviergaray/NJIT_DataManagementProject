@@ -1,0 +1,21 @@
+.container {
+    width: 80%;
+    margin: 50px auto;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+    color: #333;
+}
+
+form {
+    margin-top: 20px;
+}
+
+input, button {
+    padding: 10px;
+    margin: 10px;
+}
