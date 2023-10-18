@@ -1,14 +1,14 @@
 from flask import Flask, render_template, request
 
-app = Flask(__name__)
+main = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
 
 
-@app.route('/')
+@main.route('/')
 def index():
     return render_template('index.html')
 
 
-@app.route('/add_patient', methods=['POST'])
+@main.route('/add_patient', methods=['POST'])
 def add_patient():
     # Get form data
     name = request.form.get('name')
@@ -21,4 +21,4 @@ def add_patient():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    main.run(debug=True)
