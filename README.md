@@ -8,6 +8,7 @@ Term project for CS 631 851 at NJIT. Supplementary information can be found [her
 
 ## How to run
 1. Initalize DB
+   * Do not create a database, simply run the server and connect to it then follow the next steps
    * Run initalizeDB.sql or copy and paste its contents in your preferred configurator (MySQL Command Line Client, MySQL Workbench, etc.)
 3. Open your IDE
 4. In the terminal, navigate to the working directory, ensure pip is up to date and run the following commands:
