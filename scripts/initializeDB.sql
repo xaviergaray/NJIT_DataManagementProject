@@ -67,7 +67,7 @@ CREATE TABLE SurgerySchedule (
     SurgeryCode INT,
     SurgeonEmployeeID INT,
     PatientID INT,
-    OperationTheatre INT,
+    OperationTheatre VARCHAR(10),
     SurgeryDate DATETIME,
     FOREIGN KEY (SurgeryCode) REFERENCES SurgeryTypes (SurgeryCode),
     FOREIGN KEY (SurgeonEmployeeID) REFERENCES ClinicPersonnel (EmployeeID),
