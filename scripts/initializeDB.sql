@@ -1,3 +1,7 @@
+CREATE DATABASE NJIT_DATAMGMT;
+
+USE NJIT_DATAMGMT;
+
 CREATE TABLE ClinicPersonnel (
     EmployeeID INT PRIMARY KEY,
     LastName VARCHAR(50),
@@ -11,7 +15,7 @@ CREATE TABLE ClinicPersonnel (
     Specialty VARCHAR(50),  -- For physicians
     ContractType VARCHAR(50),  -- For surgeons
     ContractLength INT,  -- For surgeons
-    NurseGrade CHAR(1),  -- For nurses
+    NurseGrade CHAR(10),  -- For nurses
     YearsOfExperience INT  -- For nurses
 );
 
