@@ -1,5 +1,5 @@
 # NJIT_DataManagementProject
-Term project for CS 631 851 at NJIT
+Term project for CS 631 851 at NJIT. Supplementary information can be found [here](https://docs.google.com/document/d/1sM_TkhyeoWbIAFcrFBpwjBQ53cSiwFLRUVbyaL_cA-M/edit?usp=sharing).
 
 ## Dependencies
 * Flask
