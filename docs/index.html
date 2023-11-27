@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Newark Medical Associates - Patient Management</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
@@ -8,12 +9,11 @@
     <div class="container">
         <h1>Newark Medical Associates</h1>
         <h2>Insert a New Patient</h2>
-        <form action="/add_patient" method="post">
-            <input type="text" name="name" placeholder="Name" required>
-            <input type="date" name="dob" placeholder="DOB" required>
-            <input type="text" name="contact" placeholder="Contact Info" required>
-            <button type="submit">Submit</button>
-        </form>
+        <ul>
+          <li><a href="/patient/PatientManagement">Patient Management</a></li>
+          <li><a href="/inpatient/InpatientManagement">In-patient Management</a></li>
+          <li><a href="/staff/MedicalStaffManagement">Medical Staff Management</a></li>
+        </ul>
     </div>
 </body>
 </html>
