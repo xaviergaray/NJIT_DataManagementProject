@@ -52,6 +52,8 @@ def get_beds():
     cursor = db.cursor()
     cursor.execute("SELECT * FROM BedLocation")
     beds = cursor.fetchall()
+    # Convert the list of tuples to a list of dictionaries
+    beds = [dict(zip([column[0] for column in cursor.description], row)) for row in beds]
     return jsonify(beds)
 
 if __name__ == "__main__":
