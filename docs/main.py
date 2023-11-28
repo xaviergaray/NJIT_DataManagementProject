@@ -11,6 +11,8 @@ db = mysql.connector.connect(
     database="njit_datamgmt"
 )
 
+cursor = db.cursor()
+
 @main.route('/')
 def index():
     return render_template('index.html')
@@ -34,9 +36,6 @@ def add_patient():
     dob = request.form.get('dob')
     contact = request.form.get('contact')
 
-    # Create a cursor
-    cursor = db.cursor()
-
     # Insert data into the database
     sql = "INSERT INTO Patients (ID, Name, Illness, Allergies, BedID, NurseID, PhysicianID, DateOfBirth, BloodType, HDL, LDL, Triglycerides, BloodSugar, SocialSecurityNumber, AdmissionDate, NursingUnit) VALUES (%s, %s, %s, %s, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, %s, NULL, NULL)"
     val = (1, name, dob, contact, dob, contact)
@@ -49,12 +48,31 @@ def add_patient():
 
 @main.route('/get-beds')
 def get_beds():
-    cursor = db.cursor()
     cursor.execute("SELECT * FROM BedLocation")
     beds = cursor.fetchall()
     # Convert the list of tuples to a list of dictionaries
     beds = [dict(zip([column[0] for column in cursor.description], row)) for row in beds]
     return jsonify(beds)
+
+@main.route('/get-patient-by-bed-id/<int:bedID>')
+def get_patient_by_bed_id(bedID):
+    patients = get_patients()
+
+    for patient in patients:
+        if patient['BedID'] == bedID:
+            return patient
+
+    return {"Name": "None"}
+
+@main.route('/get-patients')
+def get_patients():
+    cursor.execute("SELECT * FROM Patients")
+    patients = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    patients = [dict(zip([column[0] for column in cursor.description], row)) for row in patients]
+
+    return patients
 
 if __name__ == "__main__":
     main.run(debug=True)

@@ -5,12 +5,16 @@
     <title>Newark Medical Associates - In-patient Management</title>
     <link rel="stylesheet" type="text/css" href="../styles.css">
     <style>
-        /* CSS for the scroll box */
-        #scrollBox {
+        .scrollBoxContainer {
             display: inline-block;
             width: auto;
             height: 80vh;
             overflow: auto;
+        }
+
+        /* CSS for the scroll box */
+        #scrollBox {
+            
         }
 
         /* CSS for the table */
@@ -23,6 +27,17 @@
         #databaseItems th, #databaseItems td {
             text-align: center;
         }
+
+        /* CSS for the sticky header */
+        #databaseItems th {
+            position: sticky;
+            top: 0;
+            background: white;  /* Change this to match your table's background color */
+        }
+
+        h3 {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -30,22 +45,25 @@
         <h1>Newark Medical Associates</h1>
         <h2>In-patient Management</h2>
 
-        <div id="scrollBox">
-            <table id="databaseItems">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nursing Unit</th>
-                        <th>Wing</th>
-                        <th>Room Number</th>
-                        <th>Bed Number</th>
-                        <th>Assigned Patient</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Rows from the database will be inserted here -->
-                </tbody>
-            </table>
+        <div class="scrollBoxContainer">
+            <h3>Room Availability</h3>
+            <div id="scrollBox">
+                <table id="databaseItems">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nursing Unit</th>
+                            <th>Wing</th>
+                            <th>Room Number</th>
+                            <th>Bed Number</th>
+                            <th>Assigned Patient</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows from the database will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -54,8 +72,11 @@
         window.onload = async function() {
             var databaseItems = document.getElementById('databaseItems');
 
-            let response = await fetch('/get-beds');
-            let beds = await response.json();
+            let responseBeds = await fetch('/get-beds');
+            let beds = await responseBeds.json();
+
+            let responsePatients = await fetch('/get-patients');
+            let patient = await responsePatients.json();
 
             for (var i = 0; i < beds.length; i++) {
                 var row = document.createElement('tr');
@@ -79,6 +100,12 @@
                 var bedNumberCell = document.createElement('td');
                 bedNumberCell.textContent = beds[i].BedNumber;
                 row.appendChild(bedNumberCell);
+
+                let responsePatient = await fetch(`/get-patient-by-bed-id/${beds[i].ID}`);
+                let patient = await responsePatient.json();
+                var patientCell = document.createElement('td');
+                patientCell.textContent = patient.Name
+                row.appendChild(patientCell);
 
                 databaseItems.querySelector('tbody').appendChild(row);
             }
