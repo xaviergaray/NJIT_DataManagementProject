@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Newark Medical Associates - In-patient Management</title>
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+    <style>
+        /* CSS for the scroll box */
+        #scrollBox {
+            width: 80%;
+            height: 20vh;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Newark Medical Associates</h1>
+        <h2>In-patient Management</h2>
+
+        <div id="scrollBox">
+            <table id="databaseItems">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nursing Unit</th>
+                        <th>Wing</th>
+                        <th>Room Number</th>
+                        <th>Bed Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows from the database will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript to fetch data from the Flask route and populate the table
+        window.onload = function() {
+            var databaseItems = document.getElementById('databaseItems');
+
+            fetch('/get-beds')
+                .then(response => response.json())
+                .then(beds => {
+                    for (var i = 0; i < beds.length; i++) {
+                        var row = document.createElement('tr');
+
+                        var idCell = document.createElement('td');
+                        idCell.textContent = beds[i].ID;
+                        row.appendChild(idCell);
+
+                        var nursingUnitCell = document.createElement('td');
+                        nursingUnitCell.textContent = beds[i].NursingUnit;
+                        row.appendChild(nursingUnitCell);
+
+                        var wingCell = document.createElement('td');
+                        wingCell.textContent = beds[i].Wing;
+                        row.appendChild(wingCell);
+
+                        var roomNumberCell = document.createElement('td');
+                        roomNumberCell.textContent = beds[i].RoomNumber;
+                        row.appendChild(roomNumberCell);
+
+                        var bedNumberCell = document.createElement('td');
+                        bedNumberCell.textContent = beds[i].BedNumber;
+                        row.appendChild(bedNumberCell);
+
+                        databaseItems.querySelector('tbody').appendChild(row);
+                    }
+                });
+        };
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import mysql.connector
 
 main = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
@@ -27,7 +27,6 @@ def inpatient_management():
 def medical_staff_management():
     return render_template('staff/MedicalStaffManagement.html')
 
-
 @main.route('/patient/PatientManagement/add_patient', methods=['POST'])
 def add_patient():
     # Get form data
@@ -39,7 +38,7 @@ def add_patient():
     cursor = db.cursor()
 
     # Insert data into the database
-    sql = "INSERT INTO Patients (ID, Name, Illness, Allergies, RoomNumber, BedNumber, NurseID, PhysicianID, DateOfBirth, BloodType, HDL, LDL, Triglycerides, BloodSugar, SocialSecurityNumber, AdmissionDate, NursingUnit) VALUES (%s, %s, %s, %s, NULL, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, %s, NULL, NULL)"
+    sql = "INSERT INTO Patients (ID, Name, Illness, Allergies, BedID, NurseID, PhysicianID, DateOfBirth, BloodType, HDL, LDL, Triglycerides, BloodSugar, SocialSecurityNumber, AdmissionDate, NursingUnit) VALUES (%s, %s, %s, %s, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, %s, NULL, NULL)"
     val = (1, name, dob, contact, dob, contact)
     cursor.execute(sql, val)
 
@@ -47,6 +46,13 @@ def add_patient():
     db.commit()
 
     return "Patient added successfully!"
+
+@main.route('/get-beds')
+def get_beds():
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM BedLocation")
+    beds = cursor.fetchall()
+    return jsonify(beds)
 
 if __name__ == "__main__":
     main.run(debug=True)

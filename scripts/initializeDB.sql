@@ -2,6 +2,18 @@ CREATE DATABASE NJIT_DATAMGMT;
 
 USE NJIT_DATAMGMT;
 
+-- "nursing unit, room number, and bed number"
+-- "Nursing units a renumbered 1 through 7"
+-- "rooms are located in either the Blue or Green wing"
+-- "bed numbers in a room are labeled A or B"
+CREATE TABLE BedLocation (
+    ID INT PRIMARY KEY,
+    NursingUnit INT CHECK (NursingUnit > 0 AND NursingUnit < 8) NOT NULL,
+    Wing ENUM('Blue', 'Green') NOT NULL,
+    RoomNumber INT NOT NULL,
+    BedNumber ENUM('A', 'B') NOT NULL
+);
+
 -- "All clinic personnel have an employment number, name, gender (male or female), address and telephone number; with the exception of surgeons, all clinic personnel also have a salary (which can range from $25,000 to $300,000), but salaries of some can be missing."
 -- "For both clinic personnel and patients, a Social Security number is collected."
 CREATE TABLE Personnel (
@@ -70,8 +82,7 @@ CREATE TABLE Patients (
     Name VARCHAR(100),
     Illness VARCHAR(255),
     Allergies VARCHAR(255),
-    RoomNumber INT,
-    BedNumber INT,
+    BedID INT,
     NurseID INT,
     PhysicianID INT,
     DateOfBirth DATE,
@@ -84,7 +95,8 @@ CREATE TABLE Patients (
     AdmissionDate DATE,
     NursingUnit INT,
     FOREIGN KEY (NurseID) REFERENCES Nurses(ID),
-    FOREIGN KEY (PhysicianID) REFERENCES Personnel(ID)
+    FOREIGN KEY (PhysicianID) REFERENCES Personnel(ID),
+    FOREIGN KEY (BedID) REFERENCES BedLocation(ID)
 );
 
 -- "Since surgeons perform surgery on patients as needed, it is required that a surgery schedule keep track of the operation theatre where a surgeon performs a certain surgery type on a particular patient and when that surgery type is performed."
