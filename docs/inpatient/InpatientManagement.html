@@ -122,10 +122,12 @@
 
         // Initial population of the table
         populateTable(beds);
-
+           
         // Add event listeners to the sort buttons
         var sortButtons = document.querySelectorAll('.sort-btn');
         sortButtons.forEach(function(btn) {
+            var ascending = true;  // Variable to toggle the sort order
+
             btn.addEventListener('click', function() {
                 var sortField = this.dataset.sort;
 
@@ -135,21 +137,27 @@
                     if (sortField === 'AssignedPatient') {
                         var patientA = patientMap[a.ID] ? patientMap[a.ID].Name : '';
                         var patientB = patientMap[b.ID] ? patientMap[b.ID].Name : '';
-                        if (patientA < patientB) return -1;
-                        if (patientA > patientB) return 1;
-                        return 0;
+                        var comparison = ascending ? patientA.localeCompare(patientB) : patientB.localeCompare(patientA);
+                        if (comparison !== 0) return comparison;
                     } else {
                         // Otherwise, use the bed data
-                        if (a[sortField] < b[sortField]) return -1;
-                        if (a[sortField] > b[sortField]) return 1;
-                        return 0;
+                        if (a[sortField] !== b[sortField]) {
+                            return ascending ? (a[sortField] < b[sortField] ? -1 : 1) : (a[sortField] > b[sortField] ? -1 : 1);
+                        }
                     }
+
+                    // If the fields match, sub-sort by 'ID'
+                    return a.ID - b.ID;
                 });
+
+                // Toggle the sort order for the next click
+                ascending = !ascending;
 
                 // Repopulate the table with the sorted data
                 populateTable(beds);
             });
         });
+
     };
 
     </script>
