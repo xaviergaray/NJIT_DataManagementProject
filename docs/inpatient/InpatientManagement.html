@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>NMA - In-patient Management</title>
     <link rel="stylesheet" type="text/css" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <style>
         .scrollBoxContainer {
             display: inline-block;
@@ -52,12 +53,12 @@
                 <table id="databaseItems">
                     <thead>
                         <tr>
-                            <th>ID <button class="sort-btn" data-sort="ID">Sort</button></th>
-                            <th>Nursing Unit <button class="sort-btn" data-sort="NursingUnit">Sort</button></th>
-                            <th>Wing <button class="sort-btn" data-sort="Wing">Sort</button></th>
-                            <th>Room Number <button class="sort-btn" data-sort="RoomNumber">Sort</button></th>
-                            <th>Bed Number <button class="sort-btn" data-sort="BedNumber">Sort</button></th>
-                            <th>Assigned Patient <button class="sort-btn" data-sort="AssignedPatient">Sort</button></th>
+                            <th>ID <button class="sort-btn" data-sort="ID"><i class="fas fa-sort"></i></button></th>
+                            <th>Nursing Unit <button class="sort-btn" data-sort="NursingUnit"><i class="fas fa-sort"></i></button></th>
+                            <th>Wing <button class="sort-btn" data-sort="Wing"><i class="fas fa-sort"></i></button></th>
+                            <th>Room Number <button class="sort-btn" data-sort="RoomNumber"><i class="fas fa-sort"></i></button></th>
+                            <th>Bed Number <button class="sort-btn" data-sort="BedNumber"><i class="fas fa-sort"></i></button></th>
+                            <th>Assigned Patient <button class="sort-btn" data-sort="AssignedPatient"><i class="fas fa-sort"></i></button></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -122,14 +123,21 @@
 
         // Initial population of the table
         populateTable(beds);
-           
-        // Add event listeners to the sort buttons
+
+       // Add event listeners to the sort buttons
         var sortButtons = document.querySelectorAll('.sort-btn');
         sortButtons.forEach(function(btn) {
-            var ascending = true;  // Variable to toggle the sort order
+            btn.ascending = true;  // Variable to toggle the sort order
 
             btn.addEventListener('click', function() {
                 var sortField = this.dataset.sort;
+
+                // If this is the first click, set ascending to true
+                if (btn.ascending === true) {
+                    btn.ascending = false;
+                } else {
+                    btn.ascending = true;
+                }
 
                 // Sort the data
                 beds.sort(function(a, b) {
@@ -137,12 +145,12 @@
                     if (sortField === 'AssignedPatient') {
                         var patientA = patientMap[a.ID] ? patientMap[a.ID].Name : '';
                         var patientB = patientMap[b.ID] ? patientMap[b.ID].Name : '';
-                        var comparison = ascending ? patientA.localeCompare(patientB) : patientB.localeCompare(patientA);
+                        var comparison = btn.ascending ? patientA.localeCompare(patientB) : patientB.localeCompare(patientA);
                         if (comparison !== 0) return comparison;
                     } else {
                         // Otherwise, use the bed data
                         if (a[sortField] !== b[sortField]) {
-                            return ascending ? (a[sortField] < b[sortField] ? -1 : 1) : (a[sortField] > b[sortField] ? -1 : 1);
+                            return btn.ascending ? (a[sortField] < b[sortField] ? -1 : 1) : (a[sortField] > b[sortField] ? -1 : 1);
                         }
                     }
 
@@ -150,8 +158,21 @@
                     return a.ID - b.ID;
                 });
 
-                // Toggle the sort order for the next click
-                ascending = !ascending;
+                // Change the icon
+                var icon = this.querySelector('i');
+                if (btn.ascending) {
+                    icon.className = 'fas fa-sort-up';
+                } else {
+                    icon.className = 'fas fa-sort-down';
+                }
+
+                // Reset the icons and sort order of the other columns
+                var otherButtons = document.querySelectorAll('.sort-btn:not([data-sort="' + sortField + '"])');
+                otherButtons.forEach(function(otherBtn) {
+                    var otherIcon = otherBtn.querySelector('i');
+                    otherIcon.className = 'fas fa-sort';
+                    otherBtn.ascending = true;  // Reset the sort order
+                });
 
                 // Repopulate the table with the sorted data
                 populateTable(beds);
