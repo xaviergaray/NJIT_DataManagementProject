@@ -2,19 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Newark Medical Associates - In-patient Management</title>
+    <title>NMA - In-patient Management</title>
     <link rel="stylesheet" type="text/css" href="../styles.css">
     <style>
         .scrollBoxContainer {
             display: inline-block;
             width: auto;
             height: 80vh;
-            overflow: auto;
+
         }
 
         /* CSS for the scroll box */
         #scrollBox {
-            
+            overflow: auto;
+            height: 100%;
         }
 
         /* CSS for the table */
@@ -51,12 +52,12 @@
                 <table id="databaseItems">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Nursing Unit</th>
-                            <th>Wing</th>
-                            <th>Room Number</th>
-                            <th>Bed Number</th>
-                            <th>Assigned Patient</th>
+                            <th>ID <button class="sort-btn" data-sort="ID">Sort</button></th>
+                            <th>Nursing Unit <button class="sort-btn" data-sort="NursingUnit">Sort</button></th>
+                            <th>Wing <button class="sort-btn" data-sort="Wing">Sort</button></th>
+                            <th>Room Number <button class="sort-btn" data-sort="RoomNumber">Sort</button></th>
+                            <th>Bed Number <button class="sort-btn" data-sort="BedNumber">Sort</button></th>
+                            <th>Assigned Patient <button class="sort-btn" data-sort="AssignedPatient">Sort</button></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,48 +69,89 @@
     </div>
 
     <script>
-        // JavaScript to fetch data from the Flask route and populate the table
-        window.onload = async function() {
-            var databaseItems = document.getElementById('databaseItems');
+       window.onload = async function() {
+        var databaseItems = document.getElementById('databaseItems');
 
-            let responseBeds = await fetch('/get-beds');
-            let beds = await responseBeds.json();
+        let responseBeds = await fetch('/get-beds');
+        let beds = await responseBeds.json();
 
-            let responsePatients = await fetch('/get-patients');
-            let patient = await responsePatients.json();
+        // Fetch all patients and store them in a map for quick lookup
+        let responsePatients = await fetch('/get-patients');
+        let patients = await responsePatients.json();
+        let patientMap = {};
+        for (let patient of patients) {
+            patientMap[patient.BedID] = patient;
+        }
 
-            for (var i = 0; i < beds.length; i++) {
+        // Function to populate the table with data
+        function populateTable(data) {
+            // Clear the table first
+            databaseItems.querySelector('tbody').innerHTML = '';
+
+            for (var i = 0; i < data.length; i++) {
                 var row = document.createElement('tr');
 
                 var idCell = document.createElement('td');
-                idCell.textContent = beds[i].ID;
+                idCell.textContent = data[i].ID;
                 row.appendChild(idCell);
 
                 var nursingUnitCell = document.createElement('td');
-                nursingUnitCell.textContent = beds[i].NursingUnit;
+                nursingUnitCell.textContent = data[i].NursingUnit;
                 row.appendChild(nursingUnitCell);
 
                 var wingCell = document.createElement('td');
-                wingCell.textContent = beds[i].Wing;
+                wingCell.textContent = data[i].Wing;
                 row.appendChild(wingCell);
 
                 var roomNumberCell = document.createElement('td');
-                roomNumberCell.textContent = beds[i].RoomNumber;
+                roomNumberCell.textContent = data[i].RoomNumber;
                 row.appendChild(roomNumberCell);
 
                 var bedNumberCell = document.createElement('td');
-                bedNumberCell.textContent = beds[i].BedNumber;
+                bedNumberCell.textContent = data[i].BedNumber;
                 row.appendChild(bedNumberCell);
 
-                let responsePatient = await fetch(`/get-patient-by-bed-id/${beds[i].ID}`);
-                let patient = await responsePatient.json();
+                var patient = patientMap[data[i].ID];
                 var patientCell = document.createElement('td');
-                patientCell.textContent = patient.Name
+                patientCell.textContent = patient ? patient.Name : 'No patient assigned';
                 row.appendChild(patientCell);
 
                 databaseItems.querySelector('tbody').appendChild(row);
             }
-        };
+        }
+
+        // Initial population of the table
+        populateTable(beds);
+
+        // Add event listeners to the sort buttons
+        var sortButtons = document.querySelectorAll('.sort-btn');
+        sortButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var sortField = this.dataset.sort;
+
+                // Sort the data
+                beds.sort(function(a, b) {
+                    // If sorting by 'AssignedPatient', use the patient data
+                    if (sortField === 'AssignedPatient') {
+                        var patientA = patientMap[a.ID] ? patientMap[a.ID].Name : '';
+                        var patientB = patientMap[b.ID] ? patientMap[b.ID].Name : '';
+                        if (patientA < patientB) return -1;
+                        if (patientA > patientB) return 1;
+                        return 0;
+                    } else {
+                        // Otherwise, use the bed data
+                        if (a[sortField] < b[sortField]) return -1;
+                        if (a[sortField] > b[sortField]) return 1;
+                        return 0;
+                    }
+                });
+
+                // Repopulate the table with the sorted data
+                populateTable(beds);
+            });
+        });
+    };
+
     </script>
 </body>
 </html>
