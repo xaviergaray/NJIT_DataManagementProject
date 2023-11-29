@@ -6,40 +6,75 @@
     <link rel="stylesheet" type="text/css" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <style>
-        .scrollBoxContainer {
-            display: inline-block;
-            width: auto;
-            height: 80vh;
+    .scrollBoxContainer {
+        display: inline-block;
+        width: auto;
+        height: 80vh;
+    }
 
-        }
+    /* CSS for the scroll box */
+    #scrollBox {
+        overflow: auto;
+        height: 100%;
+    }
 
-        /* CSS for the scroll box */
-        #scrollBox {
-            overflow: auto;
-            height: 100%;
-        }
+    /* CSS for the table */
+    #databaseItems {
+        border-collapse: collapse;
+        table-layout: auto;
+    }
 
-        /* CSS for the table */
-        #databaseItems {
-            border-collapse: separate;
-            border-spacing: 2em;  /* Increase this value to increase spacing */
-            table-layout: auto;
-        }
+    /* CSS for the table rows */
+    #databaseItems tr {
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        height: 5vh;
+        font-size: 100%;
+    }
 
-        #databaseItems th, #databaseItems td {
-            text-align: center;
-        }
+    /* CSS for the leftmost and rightmost table cells */
+    #databaseItems td:first-child, #databaseItems th:first-child {
+        border-left: 1px solid black;
+    }
+    #databaseItems td:last-child, #databaseItems th:last-child {
+        border-right: 1px solid black;
+    }
 
-        /* CSS for the sticky header */
-        #databaseItems th {
-            position: sticky;
-            top: 0;
-            background: white;  /* Change this to match your table's background color */
-        }
+    #databaseItems th, #databaseItems td {
+        text-align: center;
+    }
 
-        h3 {
-            text-align: center;
-        }
+    /* CSS for the sticky header */
+    #databaseItems th {
+        position: sticky;
+        top: 0;
+        background: white;  /* Change this to match your table's background color */
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+    }
+
+    h3 {
+        text-align: center;
+    }
+
+    #databaseItems th:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    top: -1px;
+    border-top: 1px solid black;
+    }
+
+    #databaseItems th:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 100%;
+        bottom: -1px;
+        border-bottom: 1px solid black;
+    }
+
     </style>
 </head>
 <body>
@@ -52,14 +87,14 @@
             <div id="scrollBox">
                 <table id="databaseItems">
                     <thead>
-                        <tr>
+                        <tr-h>
                             <th>ID <button class="sort-btn" data-sort="ID"><i class="fas fa-sort"></i></button></th>
                             <th>Nursing Unit <button class="sort-btn" data-sort="NursingUnit"><i class="fas fa-sort"></i></button></th>
                             <th>Wing <button class="sort-btn" data-sort="Wing"><i class="fas fa-sort"></i></button></th>
                             <th>Room Number <button class="sort-btn" data-sort="RoomNumber"><i class="fas fa-sort"></i></button></th>
                             <th>Bed Number <button class="sort-btn" data-sort="BedNumber"><i class="fas fa-sort"></i></button></th>
                             <th>Assigned Patient <button class="sort-btn" data-sort="AssignedPatient"><i class="fas fa-sort"></i></button></th>
-                        </tr>
+                        </tr-h>
                     </thead>
                     <tbody>
                         <!-- Rows from the database will be inserted here -->
@@ -89,8 +124,16 @@
             // Clear the table first
             databaseItems.querySelector('tbody').innerHTML = '';
 
+
             for (var i = 0; i < data.length; i++) {
                 var row = document.createElement('tr');
+
+                 // Style the row based on whether its index is even or odd
+                if (i % 2 === 0) {
+                    row.style.backgroundColor = '#D3D3D3';
+                } else {
+                    row.style.backgroundColor = '#808080';
+                }
 
                 var idCell = document.createElement('td');
                 idCell.textContent = data[i].ID;
