@@ -106,10 +106,10 @@ window.onload = async function() {
                     dialogBox.style.width = '20vw';
                     dialogBox.style.backgroundColor = '#fff';
                     dialogBox.style.position = 'fixed';
-                    dialogBox.style.top = '10%';
+                    dialogBox.style.top = '15%';
                     dialogBox.style.left = '50%';
                     dialogBox.style.transform = 'translate(-50%, -50%)';
-                    dialogBox.style.padding = '20px';
+                    dialogBox.style.padding = '2vh';
                     dialogBox.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
                     dialogBox.style.borderRadius = '10px';
                     modalBackdrop.appendChild(dialogBox);
@@ -155,13 +155,15 @@ window.onload = async function() {
                     };
 
                     var viewOption = createOptionButton('View Patient');
-                    var changeOption = createOptionButton('Change Patient');
+                    var changeOption = createOptionButton(patient ? 'Change Patient' : 'Add Patient');
                     var removeOption = createOptionButton('Remove Patient');
 
                     // Add the options to the dialog box
-                    dialogBox.appendChild(viewOption);
+                    if (patient) {
+                        dialogBox.appendChild(viewOption);
+                        dialogBox.appendChild(removeOption);
+                    }
                     dialogBox.appendChild(changeOption);
-                    dialogBox.appendChild(removeOption);
                 }
             })(patient));
             ellipsisCell.appendChild(ellipsisButton);
