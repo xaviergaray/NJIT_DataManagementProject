@@ -88,7 +88,7 @@ window.onload = async function() {
             ellipsisButton.style.padding = '5px 10px';
             ellipsisButton.style.borderRadius = '5px';
             ellipsisButton.style.cursor = 'pointer';
-            ellipsisButton.addEventListener('click',  (function(patient) {
+            ellipsisButton.addEventListener('click',  (function(patient, bedNumber) {
                 return function() {
                     // Create the modal backdrop
                     var modalBackdrop = document.createElement('div');
@@ -154,8 +154,8 @@ window.onload = async function() {
                         return optionButton;
                     };
 
-                    var viewOption = createOptionButton('View Patient');
-                    var changeOption = createOptionButton(patient ? 'Change Patient' : 'Add Patient');
+                    var viewOption = createOptionButton(patient ? 'View Patient' : 'Add New Patient');
+                    var changeOption = createOptionButton(patient ? 'Change Patient' : 'Add Existing Patient');
                     var removeOption = createOptionButton('Remove Patient');
 
                     // Add the options to the dialog box
@@ -166,11 +166,23 @@ window.onload = async function() {
                     }
                     else
                     {
+                        dialogBox.appendChild(viewOption);
+                        viewOption.addEventListener('click', (function(bedNumber) {
+                            return function() {
+                                window.location.href = '/patient/PatientManagement?bedNumber=' + bedNumber;
+                            }
+                        })(bedNumber));
+
                         dialogBox.appendChild(changeOption);
+                        changeOption.addEventListener('click', (function(bedNumber) {
+                            return function() {
+                                window.location.href = '/patient/PatientManagement?bedNumber=' + bedNumber;
+                            }
+                        })(bedNumber));
                     }
 
                 }
-            })(patient));
+            })(patient, data[i].ID));
             ellipsisCell.appendChild(ellipsisButton);
             row.appendChild(ellipsisCell);
 
