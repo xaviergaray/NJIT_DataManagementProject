@@ -78,6 +78,96 @@ window.onload = async function() {
             patientCell.textContent = patient ? patient.Name : 'No patient assigned';
             row.appendChild(patientCell);
 
+            // Ellipsis button
+            var ellipsisCell = document.createElement('td');
+            var ellipsisButton = document.createElement('button');
+            ellipsisButton.textContent = '...';
+            ellipsisButton.style.backgroundColor = '#007BFF';
+            ellipsisButton.style.color = 'white';
+            ellipsisButton.style.border = 'none';
+            ellipsisButton.style.padding = '5px 10px';
+            ellipsisButton.style.borderRadius = '5px';
+            ellipsisButton.style.cursor = 'pointer';
+            ellipsisButton.addEventListener('click',  (function(patient) {
+                return function() {
+                    // Create the modal backdrop
+                    var modalBackdrop = document.createElement('div');
+                    modalBackdrop.style.position = 'fixed';
+                    modalBackdrop.style.top = '0';
+                    modalBackdrop.style.left = '0';
+                    modalBackdrop.style.width = '100%';
+                    modalBackdrop.style.height = '100%';
+                    modalBackdrop.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    document.body.appendChild(modalBackdrop);
+
+                    // Create the dialog box
+                    var dialogBox = document.createElement('div');
+                    dialogBox.style.display = 'block';
+                    dialogBox.style.width = '20vw';
+                    dialogBox.style.backgroundColor = '#fff';
+                    dialogBox.style.position = 'fixed';
+                    dialogBox.style.top = '10%';
+                    dialogBox.style.left = '50%';
+                    dialogBox.style.transform = 'translate(-50%, -50%)';
+                    dialogBox.style.padding = '20px';
+                    dialogBox.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
+                    dialogBox.style.borderRadius = '10px';
+                    modalBackdrop.appendChild(dialogBox);
+
+                    // Write the patients name
+                    // Create the patient name display
+                    var patientNameDisplay = document.createElement('p');
+                    patientNameDisplay.textContent = patient ? patient.Name : 'No patient assigned';
+                    dialogBox.appendChild(patientNameDisplay);
+
+                    // Create the close button
+                    var closeButton = document.createElement('button');
+                    closeButton.textContent = 'X';
+                    closeButton.style.position = 'absolute';
+                    closeButton.style.right = '10px';
+                    closeButton.style.top = '10px';
+                    closeButton.style.backgroundColor = 'transparent';
+                    closeButton.style.border = 'none';
+                    closeButton.style.fontSize = '20px';
+                    closeButton.style.cursor = 'pointer';
+                    closeButton.addEventListener('click', function() {
+                        document.body.removeChild(modalBackdrop);
+                    });
+                    dialogBox.appendChild(closeButton);
+
+                    // Create the options
+                    var createOptionButton = function(text) {
+                        var optionButton = document.createElement('button');
+                        optionButton.textContent = text;
+                        optionButton.style.display = 'block';
+                        optionButton.style.width = '100%';
+                        optionButton.style.padding = '10px';
+                        optionButton.style.marginTop = '10px';
+                        optionButton.style.backgroundColor = '#007BFF';
+                        optionButton.style.color = 'white';
+                        optionButton.style.border = 'none';
+                        optionButton.style.borderRadius = '5px';
+                        optionButton.style.cursor = 'pointer';
+                        optionButton.addEventListener('click', function() {
+                            // Code to handle the option goes here
+                        });
+                        return optionButton;
+                    };
+
+                    var viewOption = createOptionButton('View Patient');
+                    var changeOption = createOptionButton('Change Patient');
+                    var removeOption = createOptionButton('Remove Patient');
+
+                    // Add the options to the dialog box
+                    dialogBox.appendChild(viewOption);
+                    dialogBox.appendChild(changeOption);
+                    dialogBox.appendChild(removeOption);
+                }
+            })(patient));
+            ellipsisCell.appendChild(ellipsisButton);
+            row.appendChild(ellipsisCell);
+
+
             databaseItems.querySelector('tbody').appendChild(row);
         }
     }
@@ -201,5 +291,6 @@ window.onload = async function() {
             populateTable(beds);
         });
     });
+
 
 };
