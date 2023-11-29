@@ -173,6 +173,10 @@
                             <option value="unassigned">Unassigned Beds</option>
                         </select>
                     </div>
+
+                    <div class="reset-filters">
+                        <button id="reset">Reset Filters</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -188,6 +192,7 @@
         var nursingUnitStart = document.getElementById('nursingUnitStart');
         var rangeCheckbox = document.getElementById('rangeCheckbox');
         var nursingUnitEnd = document.getElementById('nursingUnitEnd');
+        var resetFiltersButton = document.getElementById('reset');
 
         let responseBeds = await fetch('/get-beds');
         let beds = await responseBeds.json();
@@ -315,6 +320,16 @@
                 // If the end value is less than the start value, change the start value to match the end value
                 nursingUnitStart.value = nursingUnitEnd.value;
             }
+            populateTable(beds);
+        });
+
+        // Reset filters
+        resetFiltersButton.addEventListener('click', function() {
+            document.getElementById('wings').value = 'all';
+            document.getElementById('nursingUnitStart').value = '0';
+            document.getElementById('nursingUnitEnd').value = '0';
+            document.getElementById('rangeCheckbox').checked = false;
+            document.getElementById('bed-assign').value = 'all';
             populateTable(beds);
         });
 
