@@ -6,75 +6,91 @@
     <link rel="stylesheet" type="text/css" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <style>
-    .scrollBoxContainer {
-        display: inline-block;
-        width: auto;
-        height: 80vh;
-    }
+        .inpatient-management-container{
+            display: flex;
+            justify-content: space-between;
+        }
 
-    /* CSS for the scroll box */
-    #scrollBox {
-        overflow: auto;
-        height: 100%;
-    }
+        /* Scroll Box Styling */
+        .scrollBoxContainer {
+            display: inline-block;
+            width: auto;
+            height: 80vh;
+        }
 
-    /* CSS for the table */
-    #databaseItems {
-        border-collapse: collapse;
-        table-layout: auto;
-    }
+        /* CSS for the scroll box */
+        #scrollBox {
+            overflow: auto;
+            height: 90%;
+        }
 
-    /* CSS for the table rows */
-    #databaseItems tr {
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
-        height: 5vh;
-        font-size: 100%;
-    }
+        /* CSS for the table */
+        #databaseItems {
+            border-collapse: collapse;
+            table-layout: auto;
+        }
 
-    /* CSS for the leftmost and rightmost table cells */
-    #databaseItems td:first-child, #databaseItems th:first-child {
-        border-left: 1px solid black;
-    }
-    #databaseItems td:last-child, #databaseItems th:last-child {
-        border-right: 1px solid black;
-    }
+        /* CSS for the table rows */
+        #databaseItems tr {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            height: 5vh;
+            font-size: 100%;
+        }
 
-    #databaseItems th, #databaseItems td {
-        text-align: center;
-    }
+        /* CSS for the leftmost and rightmost table cells */
+        #databaseItems td:first-child, #databaseItems th:first-child {
+            border-left: 1px solid black;
+        }
+        #databaseItems td:last-child, #databaseItems th:last-child {
+            border-right: 1px solid black;
+        }
 
-    /* CSS for the sticky header */
-    #databaseItems th {
-        position: sticky;
-        top: 0;
-        background: white;  /* Change this to match your table's background color */
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
-    }
+        #databaseItems th, #databaseItems td {
+            text-align: center;
+        }
 
-    h3 {
-        text-align: center;
-    }
+        /* CSS for the sticky header */
+        #databaseItems th {
+            position: sticky;
+            top: 0;
+            background: white;  /* Change this to match your table's background color */
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+        }
 
-    #databaseItems th:before {
-    content: '';
-    position: absolute;
-    left: 0;
-    width: 100%;
-    top: -1px;
-    border-top: 1px solid black;
-    }
+        h3 {
+            text-align: center;
+        }
 
-    #databaseItems th:after {
+        #databaseItems th:before {
         content: '';
         position: absolute;
         left: 0;
         width: 100%;
-        bottom: -1px;
-        border-bottom: 1px solid black;
-    }
+        top: -1px;
+        border-top: 1px solid black;
+        }
 
+        #databaseItems th:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            bottom: -1px;
+            border-bottom: 1px solid black;
+        }
+
+        /* Filters styling */
+        .filters-container {
+            width: 40%;
+        }
+
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
     </style>
 </head>
 <body>
@@ -82,31 +98,96 @@
         <h1>Newark Medical Associates</h1>
         <h2>In-patient Management</h2>
 
-        <div class="scrollBoxContainer">
-            <h3>Room Availability</h3>
-            <div id="scrollBox">
-                <table id="databaseItems">
-                    <thead>
-                        <tr-h>
-                            <th>ID <button class="sort-btn" data-sort="ID"><i class="fas fa-sort"></i></button></th>
-                            <th>Nursing Unit <button class="sort-btn" data-sort="NursingUnit"><i class="fas fa-sort"></i></button></th>
-                            <th>Wing <button class="sort-btn" data-sort="Wing"><i class="fas fa-sort"></i></button></th>
-                            <th>Room Number <button class="sort-btn" data-sort="RoomNumber"><i class="fas fa-sort"></i></button></th>
-                            <th>Bed Number <button class="sort-btn" data-sort="BedNumber"><i class="fas fa-sort"></i></button></th>
-                            <th>Assigned Patient <button class="sort-btn" data-sort="AssignedPatient"><i class="fas fa-sort"></i></button></th>
-                        </tr-h>
-                    </thead>
-                    <tbody>
-                        <!-- Rows from the database will be inserted here -->
-                    </tbody>
-                </table>
+        <div class="inpatient-management-container">
+            <div class="scrollBoxContainer">
+                <h3>Room Availability</h3>
+
+                <div id="scrollBox">
+                    <table id="databaseItems">
+                        <thead>
+                            <tr-h>
+                                <th>ID <button class="sort-btn" data-sort="ID"><i class="fas fa-sort"></i></button></th>
+                                <th>Nursing Unit <button class="sort-btn" data-sort="NursingUnit"><i class="fas fa-sort"></i></button></th>
+                                <th>Wing <button class="sort-btn" data-sort="Wing"><i class="fas fa-sort"></i></button></th>
+                                <th>Room Number <button class="sort-btn" data-sort="RoomNumber"><i class="fas fa-sort"></i></button></th>
+                                <th>Bed Number <button class="sort-btn" data-sort="BedNumber"><i class="fas fa-sort"></i></button></th>
+                                <th>Assigned Patient <button class="sort-btn" data-sort="AssignedPatient"><i class="fas fa-sort"></i></button></th>
+                            </tr-h>
+                        </thead>
+                        <tbody>
+                            <!-- Rows from the database will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="filters-container">
+                <h3>Filters</h3>
+
+                <div class="filters">
+                    <div class="wings-filters">
+                        <label for="wings">Wings:</label>
+                        <select id="wings">
+                            <option value="all">All</option>
+                            <option value="Blue">Blue</option>
+                            <option value="Green">Green</option>
+                        </select>
+                    </div>
+
+                    <div class="nursing-units-filters">
+                        <label for="nursingUnitStart">Nursing Unit:</label>
+                        <select id="nursingUnitStart">
+                            <option value="0">All Units</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                        </select>
+
+                        <label for="nursingUnitEnd">Nursing Unit End:</label>
+                        <select id="nursingUnitEnd" disabled>
+                            <option value="0"></option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                        </select>
+                    </div>
+
+                    <div class="nursing-units-range-box">
+                        <label for="rangeCheckbox">Nursing Unit Range?</label>
+                        <input type="checkbox" id="rangeCheckbox">
+                    </div>
+
+                    <div class="bed-assign-filters">
+                        <label for="bed-assign">Bed Assign Status:</label>
+                        <select id="bed-assign">
+                            <option value="all">All Beds</option>
+                            <option value="assigned">Assigned Beds</option>
+                            <option value="unassigned">Unassigned Beds</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+
     <script>
        window.onload = async function() {
         var databaseItems = document.getElementById('databaseItems');
+        var bedAssign = document.getElementById('bed-assign');
+        var wings = document.getElementById('wings');
+        var nursingUnitStartLabel = document.querySelector('label[for="nursingUnitStart"]');
+        var nursingUnitStart = document.getElementById('nursingUnitStart');
+        var rangeCheckbox = document.getElementById('rangeCheckbox');
+        var nursingUnitEnd = document.getElementById('nursingUnitEnd');
 
         let responseBeds = await fetch('/get-beds');
         let beds = await responseBeds.json();
@@ -124,16 +205,34 @@
             // Clear the table first
             databaseItems.querySelector('tbody').innerHTML = '';
 
+            var count = 0;
 
             for (var i = 0; i < data.length; i++) {
+                var patient = patientMap[data[i].ID];
+
+                // Filter the data based on the selected option
+                if (bedAssign.value === 'assigned' && !patient) continue;
+                if (bedAssign.value === 'unassigned' && patient) continue;
+
+                // Filter the data based on the selected wing
+                if (wings.value !== 'all' && data[i].Wing !== wings.value) continue;
+
+                // Filter the data based on the selected nursing unit
+                var nursingUnit = parseInt(data[i].NursingUnit);
+                var start = parseInt(nursingUnitStart.value);
+                var end = rangeCheckbox.checked ? parseInt(nursingUnitEnd.value) : start;
+                if (start != 0 && (nursingUnit < start || nursingUnit > end)) continue;
+
                 var row = document.createElement('tr');
 
-                 // Style the row based on whether its index is even or odd
-                if (i % 2 === 0) {
+                // Style the row based on whether its index is even or odd
+                if (count  % 2 === 0) {
                     row.style.backgroundColor = '#D3D3D3';
                 } else {
                     row.style.backgroundColor = '#808080';
                 }
+
+                count++;
 
                 var idCell = document.createElement('td');
                 idCell.textContent = data[i].ID;
@@ -166,6 +265,58 @@
 
         // Initial population of the table
         populateTable(beds);
+
+        // Update the table whenever the selected option changes
+        bedAssign.addEventListener('change', function() {
+            populateTable(beds);
+        });
+
+        // Update the table whenever the selected wing changes
+        wings.addEventListener('change', function() {
+            populateTable(beds);
+        });
+
+        // Enable or disable the second dropdown based on the checkbox
+        rangeCheckbox.addEventListener('change', function() {
+            nursingUnitEnd.disabled = !this.checked;
+            nursingUnitStartLabel.textContent = this.checked ? 'Nursing Unit Start:' : 'Nursing Unit:';
+            if (this.checked) {
+                // Remove the "All Units" option from the start dropdown
+                nursingUnitStart.options[0].disabled = true;
+                // Remove the null option from the end dropdown
+                nursingUnitEnd.options[0].disabled = true;
+                // If "All Units" was selected, change the selection to "1"
+                if (nursingUnitStart.value === '0') {
+                    nursingUnitStart.value = '1';
+                }
+                // If null was selected or value is less than nursing unit, change the end selection to match start
+                if (nursingUnitEnd.value === '0' || nursingUnitEnd.value < nursingUnitStart.value) {
+                    nursingUnitEnd.value = nursingUnitStart.value;
+                }
+            } else {
+                // Add the "All Units" option back to the start dropdown
+                nursingUnitStart.options[0].disabled = false;
+            }
+            populateTable(beds);
+        });
+
+        // Update the table whenever the selected nursing unit changes
+        nursingUnitStart.addEventListener('change', function() {
+            if (rangeCheckbox.checked && parseInt(nursingUnitStart.value) > parseInt(nursingUnitEnd.value)) {
+                // If the start value is greater than the end value, change the end value to match the start value
+                nursingUnitEnd.value = nursingUnitStart.value;
+            }
+            populateTable(beds);
+        });
+
+        // Update the table whenever the selected nursing unit range changes
+        nursingUnitEnd.addEventListener('change', function() {
+            if (rangeCheckbox.checked && parseInt(nursingUnitEnd.value) < parseInt(nursingUnitStart.value)) {
+                // If the end value is less than the start value, change the start value to match the end value
+                nursingUnitStart.value = nursingUnitEnd.value;
+            }
+            populateTable(beds);
+        });
 
        // Add event listeners to the sort buttons
         var sortButtons = document.querySelectorAll('.sort-btn');
