@@ -161,9 +161,14 @@ window.onload = async function() {
                     // Add the options to the dialog box
                     if (patient) {
                         dialogBox.appendChild(viewOption);
+                        dialogBox.appendChild(changeOption);
                         dialogBox.appendChild(removeOption);
                     }
-                    dialogBox.appendChild(changeOption);
+                    else
+                    {
+                        dialogBox.appendChild(changeOption);
+                    }
+
                 }
             })(patient));
             ellipsisCell.appendChild(ellipsisButton);
