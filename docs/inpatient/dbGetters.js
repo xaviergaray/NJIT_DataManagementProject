@@ -18,6 +18,18 @@ window.onload = async function() {
     for (let patient of patients) {
         patientMap[patient.BedID] = patient;
     }
+    async function queryDB() {
+        responseBeds = await fetch('/get-beds');
+        beds = await responseBeds.json();
+
+        // Fetch all patients and store them in a map for quick lookup
+        responsePatients = await fetch('/get-patients');
+        patients = await responsePatients.json();
+        patientMap = {};
+        for (let patient of patients) {
+            patientMap[patient.BedID] = patient;
+        }
+    }
 
     // Function to populate the table with data
     function populateTable(data) {
@@ -163,6 +175,31 @@ window.onload = async function() {
                         dialogBox.appendChild(viewOption);
                         dialogBox.appendChild(changeOption);
                         dialogBox.appendChild(removeOption);
+                        removeOption.addEventListener('click', (function(patient, bedNumber) {
+                            return function() {
+                                fetch('/set-patient-info', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                    },
+                                    body: new URLSearchParams({
+                                        patientID: patient.ID,
+                                        param: 'BedID',
+                                        value: 'NULL'
+                                    })
+                                })
+                                    .then(response => response.text())
+                                    .then(data => {
+                                    // Add follow-up message here
+                                        console.log('Success:', data);
+                                        alert(`Patient ${patient.Name} was successfully removed from bed #${bedNumber}`);
+                                        queryDB();
+                                        populateTable(beds);
+                                        var clickEvent = new Event('click');
+                                        closeButton.dispatchEvent(clickEvent);
+                                })
+                            }
+                        })(patient, bedNumber));
                     }
                     else
                     {

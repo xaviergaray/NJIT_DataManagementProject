@@ -62,7 +62,7 @@ def remove_patient_by_bed_id():
     value = request.form.get('value')
 
     # Insert data into the database
-    sql = f"UPDATE Patient SET {param} WHERE ID = {id};"
+    sql = f"UPDATE Patient SET {param} = {value} WHERE ID = {id};"
     cursor.execute(sql)
 
     # Commit the transaction
