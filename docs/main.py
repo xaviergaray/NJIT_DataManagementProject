@@ -48,7 +48,7 @@ def add_patient():
 
 @main.route('/get-beds')
 def get_beds():
-    cursor.execute("SELECT * FROM BedLocation")
+    cursor.execute("SELECT * FROM ClinicBed")
     beds = cursor.fetchall()
     # Convert the list of tuples to a list of dictionaries
     beds = [dict(zip([column[0] for column in cursor.description], row)) for row in beds]
@@ -66,7 +66,7 @@ def get_patient_by_bed_id(bedID):
 
 @main.route('/get-patients')
 def get_patients():
-    cursor.execute("SELECT * FROM Patients")
+    cursor.execute("SELECT * FROM Patient")
     patients = cursor.fetchall()
 
     # Convert the list of tuples to a list of dictionaries

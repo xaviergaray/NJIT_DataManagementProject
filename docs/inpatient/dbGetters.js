@@ -69,9 +69,9 @@ window.onload = async function() {
             roomNumberCell.textContent = data[i].RoomNumber;
             row.appendChild(roomNumberCell);
 
-            var bedNumberCell = document.createElement('td');
-            bedNumberCell.textContent = data[i].BedNumber;
-            row.appendChild(bedNumberCell);
+            var bedLetterCell = document.createElement('td');
+            bedLetterCell.textContent = data[i].BedLetter;
+            row.appendChild(bedLetterCell);
 
             var patient = patientMap[data[i].ID];
             var patientCell = document.createElement('td');
