@@ -118,7 +118,6 @@ CREATE TABLE Patient (
     Address VARCHAR(255),
     PhoneNumber VARCHAR(14),
     SocialSecurityNumber VARCHAR(11),
-    Illness VARCHAR(255),
     BedID INT,
     AdmissionDate DATE,
     AdmissionDuration INT,
