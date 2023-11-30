@@ -54,6 +54,23 @@ def get_beds():
     beds = [dict(zip([column[0] for column in cursor.description], row)) for row in beds]
     return jsonify(beds)
 
+@main.route('/set-patient-info', methods=['POST'])
+def remove_patient_by_bed_id():
+    # Get form data
+    id = request.form.get('patientID')
+    param = request.form.get('param')
+    value = request.form.get('value')
+
+    # Insert data into the database
+    sql = f"UPDATE Patient SET {param} WHERE ID = {id};"
+    cursor.execute(sql)
+
+    # Commit the transaction
+    db.commit()
+
+    return f"Patient #{id}'s {param} set to {value}"
+
+
 @main.route('/get-patient-by-bed-id/<int:bedID>')
 def get_patient_by_bed_id(bedID):
     patients = get_patients()
