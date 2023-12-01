@@ -134,6 +134,32 @@ def initializeNurses(nurses):
     # Commit the transaction
     db.commit()
 
+def initializePhysicians(physicians):
+    overrideTable('Physician')
+
+    # Create a list of employee IDs without roles
+    cursor.execute("SELECT ID FROM Employee WHERE Role IS NULL")
+    EIDs = [row[0] for row in cursor.fetchall()]
+
+    # Randomly assign available EIDs to nurses
+    for physician in range(1, physicians + 1):
+        if EIDs:
+            assigned_EID = random.choice(EIDs)
+            EIDs.remove(assigned_EID)
+            sql = "INSERT INTO Physician (ID, Specialty, FieldType, PercentOwnership) VALUES (%s, %s, %s, %s)"
+            val = (assigned_EID,
+                   random.choice(['Internal Medicine', 'Pediatrics', 'Ophthalmology', 'Family Medicine', 'Orthopedics']),
+                   None,
+                   random.randint(0, 20)
+                   )
+            cursor.execute(sql, val)
+            print(f"Physician {physician} has been assigned to employee ID {assigned_EID}")
+        else:
+            print(f"No more employee IDs available. Physician {physician} could not be assigned a position")
+
+    # Commit the transaction
+    db.commit()
+
 def initializeRelationships(rel1, rel2, n):
     if rel1 == 'patient' or rel2 == 'patient':
         if rel1 == 'nurse' or rel2 == 'nurse':
@@ -199,6 +225,7 @@ if __name__ == "__main__":
     parser.add_argument('-patients', type=int, help='the number of patients to insert')
     parser.add_argument('-employees', type=int, help='the number of employees to insert')
     parser.add_argument('-nurses', type=int, help='the number of nurses to insert')
+    parser.add_argument('-physicians', type=int, help='the number of physicians to insert')
     parser.add_argument('-relationship', nargs=3, metavar=('rel1', 'rel2', 'n'), help='takes 3 arguments: rel1 and rel2 for the relationships and n for the amount')
     args = parser.parse_args()
 
@@ -216,3 +243,5 @@ if __name__ == "__main__":
         rel2 = args.relationship[1]
         n = int(args.relationship[2])
         initializeRelationships(rel1, rel2, n)
+    if args.physicians is not None:
+        initializePhysicians(args.physicians)
