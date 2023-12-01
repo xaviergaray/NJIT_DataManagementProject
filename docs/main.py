@@ -162,6 +162,21 @@ def get_patients_physician_relationship():
 
     return relationships
 
+@main.route('/get-medical-data', methods=['POST'])
+def get_medical_data():
+    # Get form data
+    patientID = request.form.get('patientID')
+    query = "SELECT * FROM PatientAssignedPhysician"
+    if(patientID):
+        query += f" WHERE PatientID={patientID}"
+
+    cursor.execute(query)
+    medicalData = cursor.fetchall()
+
+    medicalData = [dict(zip([column[0] for column in cursor.description], row)) for row in medicalData]
+
+    return medicalData
+
 @main.route('/get-patients')
 def get_patients():
     cursor.execute("SELECT * FROM Patient")
