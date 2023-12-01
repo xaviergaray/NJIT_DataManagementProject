@@ -121,9 +121,7 @@ CREATE TABLE Patient (
     BedID INT,
     AdmissionDate DATE,
     AdmissionDuration INT,
-    NurseID INT,
     PrimaryPhysicianID INT,
-    FOREIGN KEY (NurseID) REFERENCES Nurse(ID),
     FOREIGN KEY (PrimaryPhysicianID) REFERENCES Physician(ID),
     FOREIGN KEY (BedID) REFERENCES ClinicBed(ID)
 );

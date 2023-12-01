@@ -66,7 +66,7 @@ def initializePatients(patients):
         if bed_ids:
             assigned_bed = random.choice(bed_ids)
             bed_ids.remove(assigned_bed)
-            sql = "INSERT INTO Patient (ID, Name, Gender, DOB, Address, PhoneNumber, SocialSecurityNumber, BedID, AdmissionDate, AdmissionDuration, NurseID, PrimaryPhysicianID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO Patient (ID, Name, Gender, DOB, Address, PhoneNumber, SocialSecurityNumber, BedID, AdmissionDate, AdmissionDuration, PrimaryPhysicianID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
             val = (patientID,
                    f"Patient {patientID}",
                    random.choice(['M','F']),
@@ -76,7 +76,6 @@ def initializePatients(patients):
                    f"({random.randint(100, 999)}){random.randint(10, 99)}{random.randint(1000, 9999)}",
                    assigned_bed,
                    randomDate(datetime.now() - timedelta(days=10), datetime.now()),
-                   None,
                    None,
                    None
                    )
