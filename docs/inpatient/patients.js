@@ -51,9 +51,6 @@ window.onload = async function() {
 function createPatientTable(patients, patientID, fieldValuesTitle) {
     let fieldValues = getFieldValues(fieldValuesTitle)
     let matchedPatients = patients.filter(patient => patient.ID == patientID || patient.PatientID == patientID);
-    console.log(patients);
-    console.log(patientID);
-    console.log(fieldValuesTitle);
     let patientTableDiv = document.getElementById('patientTable');
     // Clear the div before adding the new table
     while (patientTableDiv.firstChild) {
