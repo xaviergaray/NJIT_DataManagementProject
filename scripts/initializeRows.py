@@ -161,10 +161,20 @@ def initializePhysicians(physicians):
     db.commit()
 
 def initializeRelationships(rel1, rel2, n):
+    bFound = False
     if rel1 == 'patient' or rel2 == 'patient':
         if rel1 == 'nurse' or rel2 == 'nurse':
+            bFound = True
             table = 'PatientAssignedNurse'
             sql = f"INSERT INTO {table} (NurseID, PatientID, Shift, DateOfCare) VALUES (%s, %s, %s, %s)"
+        if rel1 == 'physician' or rel2 == 'physician':
+            bFound = True
+            table = 'PatientAssignedPhysician'
+            sql = f"INSERT INTO {table} (PhysicianID, PatientID) VALUES (%s, %s)"
+
+    if(not bFound):
+        print("Could not complete request. Check the spelling of your parameters.")
+        return
 
     overrideTable(f'{table}')
 
@@ -213,7 +223,7 @@ def initializeRelationships(rel1, rel2, n):
                 print(f'Error: there are no more IDs in {rel1}')
                 return
 
-    print(f"Successfully created {n} relationships.")
+    print(f"Successfully created {n} relationships between {rel1} and {rel2}.")
     # Commit the transaction
     db.commit()
 
