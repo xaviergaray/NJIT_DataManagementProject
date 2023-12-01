@@ -8,95 +8,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <script src="dbSetters.js"></script>
     <script src="dbGetters.js"></script>
+    <style>
+        nav2 {
+            display: flex;
+            gap: 5em;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1><a href="/">Newark Medical Associates</a></h1>
         <h2>In-patient Management</h2>
+        <nav2>
+            <h2><a href="/inpatient/Patients">Patients</a></h2>
+            <h2><a href="/inpatient/Staff">Staff</a></h2>
+            <h2><a href="/inpatient/Rooms">Rooms</a></h2>
+        </nav2>
 
-        <div class="inpatient-management-container">
-            <div class="scrollBoxContainer">
-                <h3>Room Availability</h3>
-
-                <div id="scrollBox">
-                    <table id="databaseItems">
-                        <thead>
-                            <tr-h>
-                                <th>ID <button class="sort-btn" data-sort="ID"><i class="fas fa-sort"></i></button></th>
-                                <th>Nursing Unit <button class="sort-btn" data-sort="NursingUnit"><i class="fas fa-sort"></i></button></th>
-                                <th>Wing <button class="sort-btn" data-sort="Wing"><i class="fas fa-sort"></i></button></th>
-                                <th>Room Number <button class="sort-btn" data-sort="RoomNumber"><i class="fas fa-sort"></i></button></th>
-                                <th>Bed <button class="sort-btn" data-sort="BedLetter"><i class="fas fa-sort"></i></button></th>
-                                <th>Assigned Patient <button class="sort-btn" data-sort="AssignedPatient"><i class="fas fa-sort"></i></button></th>
-                                <th></th>
-                            </tr-h>
-                        </thead>
-                        <tbody>
-                            <!-- Rows from the database will be inserted here -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="filters-container">
-                <h3>Filters</h3>
-
-                <div class="filters">
-                    <div class="wings-filters">
-                        <label for="wings">Wings:</label>
-                        <select id="wings">
-                            <option value="all">All</option>
-                            <option value="Blue">Blue</option>
-                            <option value="Green">Green</option>
-                        </select>
-                    </div>
-
-                    <div class="nursing-units-filters">
-                        <label for="nursingUnitStart">Nursing Unit:</label>
-                        <select id="nursingUnitStart">
-                            <option value="0">All Units</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                        </select>
-
-                        <label for="nursingUnitEnd">Nursing Unit End:</label>
-                        <select id="nursingUnitEnd" disabled>
-                            <option value="0"></option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                        </select>
-                    </div>
-
-                    <div class="nursing-units-range-box">
-                        <label for="rangeCheckbox">Nursing Unit Range?</label>
-                        <input type="checkbox" id="rangeCheckbox">
-                    </div>
-
-                    <div class="bed-assign-filters">
-                        <label for="bed-assign">Bed Assign Status:</label>
-                        <select id="bed-assign">
-                            <option value="all">All Beds</option>
-                            <option value="assigned">Assigned Beds</option>
-                            <option value="unassigned">Unassigned Beds</option>
-                        </select>
-                    </div>
-
-                    <div class="reset-filters">
-                        <button id="reset">Reset Filters</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </body>
 </html>

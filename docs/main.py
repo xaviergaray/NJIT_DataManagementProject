@@ -25,6 +25,18 @@ def patient_management():
 def inpatient_management():
     return render_template('inpatient/InpatientManagement.html')
 
+@main.route('/inpatient/Patients')
+def inpatient_management_patients():
+    return render_template('inpatient/Patients.html')
+
+@main.route('/inpatient/Staff')
+def inpatient_management_staff():
+    return render_template('inpatient/Staff.html')
+
+@main.route('/inpatient/Rooms')
+def inpatient_management_rooms():
+    return render_template('inpatient/Rooms.html')
+
 @main.route('/staff/MedicalStaffManagement')
 def medical_staff_management():
     return render_template('staff/MedicalStaffManagement.html')
