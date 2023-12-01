@@ -52,7 +52,7 @@ def initializeBedsTable(beds):
     # Commit the transaction
     db.commit()
 
-    print(f"{beds} rows inserted successfully!")
+    print(f"{beds} beds added successfully!")
 
 def initializePatients(patients):
     overrideTable('Patient')
@@ -179,7 +179,7 @@ def initializeMedicalData(MedicalData):
             print(f'Could not add {MedicalData - data} records. Ensure there are enough patients to accomodate this amount')
             return
 
-    print(f'Successfully added {MedicalData} medical records')
+    print(f'{MedicalData} medical records added successfully!')
     # Commit the transaction
     db.commit()
 
@@ -246,10 +246,19 @@ def initializeRelationships(rel1, rel2, n):
                 print(f'Error: there are no more IDs in {rel1}')
                 return
 
-    print(f"Successfully created {n} relationships between {rel1} and {rel2}.")
+    print(f"{n} relationships between {rel1} and {rel2} added successfully!")
     # Commit the transaction
     db.commit()
 
+def defaultRows():
+        initializeBedsTable(700)
+        initializePatients(623)
+        initializeEmployees(721)
+        initializeNurses(200)
+        initializeRelationships('patient', 'nurse', 73)
+        initializePhysicians(130)
+        initializeRelationships('patient', 'physician', 95)
+        initializeMedicalData(423)
 
 if __name__ == "__main__":
     # Parse command-line arguments
@@ -261,9 +270,12 @@ if __name__ == "__main__":
     parser.add_argument('-physicians', type=int, help='the number of physicians to insert')
     parser.add_argument('-relationship', nargs=3, metavar=('rel1', 'rel2', 'n'), help='takes 3 arguments: rel1 and rel2 for the relationships and n for the amount')
     parser.add_argument('-medicaldata', type=int, help='the amount of medicalinformation to insert for random patients')
+    parser.add_argument('-default', action='store_true', help='initialize as many rows in the database as this script allows')
     args = parser.parse_args()
 
     # Initialize the rows
+    if args.default:
+        defaultRows()
     if args.beds is not None:
         initializeBedsTable(args.beds)
     if args.patients is not None:
