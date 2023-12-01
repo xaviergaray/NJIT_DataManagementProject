@@ -10,30 +10,9 @@ window.onload = async function() {
 
     let responsePhysicianRelationships = await fetch('/get-patient-physician-relationship', {
         method: 'POST',
-        body: `patientID=${selectedPatientID}`
     });
     let physicianRelationships = await responsePhysicianRelationships.json();
-
-
-    // Create a mapping of database field names to display names
-    let fieldNames = {
-        'ID': 'ID',
-        'Name': 'Name',
-        'Gender': 'Gender',
-        'DOB': 'Date of Birth',
-        'Address': 'Address',
-        'PhoneNumber': 'Phone Number',
-        'SocialSecurityNumber': 'Social Security Number',
-        'BedID': 'Assigned Bed',
-        'AdmissionDate': 'Admission Date',
-        'AdmissionDuration': 'Admission Duration',
-        'PrimaryPhysicianID': 'Primary Physician'
-    };
-
-    // Specify the order of the fields
-    let fieldOrder = ['Name', 'Gender', 'DOB', 'Address', 'PhoneNumber', 'SocialSecurityNumber', 'BedID', 'AdmissionDate', 'AdmissionDuration', 'PrimaryPhysicianID'];
-
-
+        console.log(physicianRelationships);
 
     let select = document.createElement('select');
     select.onchange = function() {
@@ -150,7 +129,12 @@ function getFieldValues(field) {
         fieldOrder = ['Name', 'Gender', 'DOB', 'Address', 'PhoneNumber', 'SocialSecurityNumber', 'BedID', 'AdmissionDate', 'AdmissionDuration', 'PrimaryPhysicianID'];
     } else if (field === 'physician')
     {
+        fieldNames = {
+            'PhysicianID' : 'Physician',
+            'PatientID' : 'PatientID',
+        }
 
+        fieldOrder = ['PhysicianID']
     } else if (field === 'nurse')
     {
         fieldNames = {

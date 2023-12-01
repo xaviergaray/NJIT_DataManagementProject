@@ -145,9 +145,7 @@ def get_patients_physician_relationship():
     conditions = []
     if patientID is not None:
         conditions.append(f"PatientID={patientID}")
-        if physicianID is not None:
-            conditions.append(f"AND PhysicianID={physicianID}")
-    elif physicianID is not None:
+    if physicianID is not None:
         conditions.append(f"PhysicianID={physicianID}")
 
     # If no conditions were added, remove the WHERE clause
