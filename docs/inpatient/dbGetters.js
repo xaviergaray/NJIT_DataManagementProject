@@ -18,18 +18,6 @@ window.onload = async function() {
     for (let patient of patients) {
         patientMap[patient.BedID] = patient;
     }
-    async function queryDB() {
-        responseBeds = await fetch('/get-beds');
-        beds = await responseBeds.json();
-
-        // Fetch all patients and store them in a map for quick lookup
-        responsePatients = await fetch('/get-patients');
-        patients = await responsePatients.json();
-        patientMap = {};
-        for (let patient of patients) {
-            patientMap[patient.BedID] = patient;
-        }
-    }
 
     // Function to populate the table with data
     function populateTable(data) {
@@ -175,7 +163,7 @@ window.onload = async function() {
                         dialogBox.appendChild(viewOption);
                         dialogBox.appendChild(changeOption);
                         dialogBox.appendChild(removeOption);
-                        removeOption.addEventListener('click', (function(patient, bedNumber) {
+                        removeOption.addEventListener('click', (function(patient, bedNumber, patientCell) {
                             return function() {
                                 fetch('/set-patient-info', {
                                     method: 'POST',
@@ -193,13 +181,13 @@ window.onload = async function() {
                                     // Add follow-up message here
                                         console.log('Success:', data);
                                         alert(`Patient ${patient.Name} was successfully removed from bed #${bedNumber}`);
-                                        queryDB();
+                                        patientMap[bedNumber] = null;
                                         populateTable(beds);
                                         var clickEvent = new Event('click');
                                         closeButton.dispatchEvent(clickEvent);
                                 })
                             }
-                        })(patient, bedNumber));
+                        })(patient, bedNumber, patientCell));
                     }
                     else
                     {
