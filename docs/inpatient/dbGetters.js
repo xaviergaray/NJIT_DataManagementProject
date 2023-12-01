@@ -154,16 +154,16 @@ window.onload = async function() {
                         return optionButton;
                     };
 
-                    var viewOption = createOptionButton(patient ? 'View Patient' : 'Add New Patient');
-                    var changeOption = createOptionButton(patient ? 'Change Patient' : 'Add Existing Patient');
+                    var viewOrNewOption = createOptionButton(patient ? 'View Patient' : 'Add New Patient');
+                    var changeOrExistingOption = createOptionButton(patient ? 'Change Patient' : 'Add Existing Patient');
                     var removeOption = createOptionButton('Remove Patient');
 
                     // Add the options to the dialog box
                     if (patient) {
-                        dialogBox.appendChild(viewOption);
-                        dialogBox.appendChild(changeOption);
+                        dialogBox.appendChild(viewOrNewOption);
+                        dialogBox.appendChild(changeOrExistingOption);
                         dialogBox.appendChild(removeOption);
-                        removeOption.addEventListener('click', (function(patient, bedNumber, patientCell) {
+                        removeOption.addEventListener('click', (function(patient, bedNumber) {
                             return function() {
                                 fetch('/set-patient-info', {
                                     method: 'POST',
@@ -187,21 +187,21 @@ window.onload = async function() {
                                         closeButton.dispatchEvent(clickEvent);
                                 })
                             }
-                        })(patient, bedNumber, patientCell));
+                        })(patient, bedNumber));
                     }
                     else
                     {
-                        dialogBox.appendChild(viewOption);
-                        viewOption.addEventListener('click', (function(bedNumber) {
+                        dialogBox.appendChild(viewOrNewOption);
+                        viewOrNewOption.addEventListener('click', (function(bedNumber) {
                             return function() {
-                                window.location.href = '/patient/PatientManagement?bedNumber=' + bedNumber;
+                                window.location.href = '/patient/PatientManagement?option=addnew&bedNumber=' + bedNumber;
                             }
                         })(bedNumber));
 
-                        dialogBox.appendChild(changeOption);
-                        changeOption.addEventListener('click', (function(bedNumber) {
+                        dialogBox.appendChild(changeOrExistingOption);
+                        changeOrExistingOption.addEventListener('click', (function(bedNumber) {
                             return function() {
-                                window.location.href = '/patient/PatientManagement?bedNumber=' + bedNumber;
+                                window.location.href = '/patient/PatientManagement?option=addexisting&bedNumber=' + bedNumber;
                             }
                         })(bedNumber));
                     }
