@@ -108,7 +108,6 @@ def initializeEmployees(employees):
     # Commit the transaction
     db.commit()
 
-#TODO: nurses
 def initializeNurses(nurses):
     overrideTable('Nurse')
 
@@ -135,6 +134,63 @@ def initializeNurses(nurses):
     # Commit the transaction
     db.commit()
 
+def initializeRelationships(rel1, rel2, n):
+    if rel1 == 'patient' or rel2 == 'patient':
+        if rel1 == 'nurse' or rel2 == 'nurse':
+            table = 'PatientAssignedNurse'
+            sql = f"INSERT INTO {table} (NurseID, PatientID, Shift, DateOfCare) VALUES (%s, %s, %s, %s)"
+
+    overrideTable(f'{table}')
+
+    # Create a list of rel1 IDs
+    cursor.execute(f"SELECT ID FROM {rel1};")
+    rel1IDs = [row[0] for row in cursor.fetchall()]
+
+    # Create a list of rel2 IDs
+    cursor.execute(f"SELECT ID FROM {rel2};")
+    rel2IDs = [row[0] for row in cursor.fetchall()]
+
+    # Randomly assign available rel1 to rel2
+    for relationship in range(0, n):
+        if rel1IDs and rel2IDs:
+            assigned_rel1 = random.choice(rel1IDs)
+            assigned_rel2 = random.choice(rel2IDs)
+
+            if table == 'PatientAssignedNurse':
+                val = (assigned_rel1,
+                       assigned_rel2,
+                       random.randint(1,3),
+                       randomDate(datetime(1930, 1, 1), datetime.now()))
+            else:
+                val = (assigned_rel1,
+                       assigned_rel2)
+            try:
+                cursor.execute(sql, val)
+            except mysql.connector.Error as e:
+                if table == 'PatientAssignedNurse':
+                    val = (assigned_rel2,
+                           assigned_rel1,
+                           random.randint(1, 3),
+                           randomDate(datetime(1930, 1, 1), datetime.now()))
+                else:
+                    val = (assigned_rel2,
+                           assigned_rel1)
+                try:
+                    cursor.execute(sql, val)
+                except:
+                    continue
+        else:
+            if rel1IDs:
+                print(f'Error: there are no more IDs in {rel2}')
+                return
+            else:
+                print(f'Error: there are no more IDs in {rel1}')
+                return
+
+    print(f"Successfully created {n} relationships.")
+    # Commit the transaction
+    db.commit()
+
 
 if __name__ == "__main__":
     # Parse command-line arguments
@@ -143,6 +199,7 @@ if __name__ == "__main__":
     parser.add_argument('-patients', type=int, help='the number of patients to insert')
     parser.add_argument('-employees', type=int, help='the number of employees to insert')
     parser.add_argument('-nurses', type=int, help='the number of nurses to insert')
+    parser.add_argument('-relationship', nargs=3, metavar=('rel1', 'rel2', 'n'), help='takes 3 arguments: rel1 and rel2 for the relationships and n for the amount')
     args = parser.parse_args()
 
     # Initialize the rows
@@ -154,3 +211,8 @@ if __name__ == "__main__":
         initializeEmployees(args.employees)
     if args.nurses is not None:
         initializeNurses(args.nurses)
+    if args.relationship is not None:
+        rel1 = args.relationship[0]
+        rel2 = args.relationship[1]
+        n = int(args.relationship[2])
+        initializeRelationships(rel1, rel2, n)
