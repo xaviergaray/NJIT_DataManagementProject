@@ -6,6 +6,28 @@
     <link rel="stylesheet" type="text/css" href="../styles.css">
     <link rel="stylesheet" type="text/css" href="additionalStyles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="patients.js"></script>
+    <!-- Add some style for the table -->
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -16,6 +38,15 @@
             <h2><a href="/inpatient/staff">Staff</a></h2>
             <h2><a href="/inpatient/rooms">Rooms</a></h2>
         </nav2>
+
+        <div id="patientSelect">
+            <!-- Rows from the database will be inserted into a dropbox here -->
+        </div>
+
+        <div id="patientTable">
+            <!-- Patient data from the database will be shown here -->
+        </div>
+
     </div>
 </body>
 </html>

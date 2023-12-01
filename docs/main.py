@@ -93,6 +93,15 @@ def get_patient_by_bed_id(bedID):
 
     return {"Name": "None"}
 
+@main.route('/get-patient/', methods=['POST'])
+def get_patient():
+    # Get form data
+    id = request.form.get('ID')
+    cursor.execute(f"SELECT * FROM Patient WHERE ID={id};")
+    patient = cursor.fetchall()
+
+    return patient
+
 @main.route('/get-patients')
 def get_patients():
     cursor.execute("SELECT * FROM Patient")
