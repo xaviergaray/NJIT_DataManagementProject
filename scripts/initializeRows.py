@@ -160,6 +160,35 @@ def initializePhysicians(physicians):
     # Commit the transaction
     db.commit()
 
+def initializeMedicalData(MedicalData):
+    overrideTable('MedicalData')
+
+    # Create a list of patient IDs
+    cursor.execute("SELECT ID FROM Patient")
+    IDs = [row[0] for row in cursor.fetchall()]
+
+    for data in range(1, MedicalData + 1):
+        if IDs:
+            assigned_ID = random.choice(IDs)
+            IDs.remove(assigned_ID)
+            sql = "INSERT INTO MedicalData (PatientID, CreationDate, BloodType, HDL, LDL, Triglycerides, BloodSugar) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            val = (assigned_ID,
+                   randomDate(datetime.now() - timedelta(days=10), datetime.now()),
+                   random.choice(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
+                   random.randint(1,200),
+                   random.randint(1,200),
+                   random.randint(1, 200),
+                   random.randint(1, 200)
+                   )
+            cursor.execute(sql, val)
+        else:
+            print(f'Could not add {MedicalData - data} records. Ensure there are enough patients to accomodate this amount')
+            return
+
+    print(f'Successfully added {MedicalData} medical records')
+    # Commit the transaction
+    db.commit()
+
 def initializeRelationships(rel1, rel2, n):
     bFound = False
     if rel1 == 'patient' or rel2 == 'patient':
@@ -237,6 +266,7 @@ if __name__ == "__main__":
     parser.add_argument('-nurses', type=int, help='the number of nurses to insert')
     parser.add_argument('-physicians', type=int, help='the number of physicians to insert')
     parser.add_argument('-relationship', nargs=3, metavar=('rel1', 'rel2', 'n'), help='takes 3 arguments: rel1 and rel2 for the relationships and n for the amount')
+    parser.add_argument('-medicaldata', type=int, help='the amount of medicalinformation to insert for random patients')
     args = parser.parse_args()
 
     # Initialize the rows
@@ -255,3 +285,5 @@ if __name__ == "__main__":
         initializeRelationships(rel1, rel2, n)
     if args.physicians is not None:
         initializePhysicians(args.physicians)
+    if args.medicaldata is not None:
+        initializeMedicalData(args.medicaldata)
