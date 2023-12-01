@@ -17,27 +17,27 @@ cursor = db.cursor()
 def index():
     return render_template('index.html')
 
-@main.route('/patient/PatientManagement')
+@main.route('/patient/')
 def patient_management():
     return render_template('patient/PatientManagement.html')
 
-@main.route('/inpatient/InpatientManagement')
+@main.route('/inpatient/')
 def inpatient_management():
     return render_template('inpatient/InpatientManagement.html')
 
-@main.route('/inpatient/Patients')
+@main.route('/inpatient/patients')
 def inpatient_management_patients():
     return render_template('inpatient/Patients.html')
 
-@main.route('/inpatient/Staff')
+@main.route('/inpatient/staff')
 def inpatient_management_staff():
     return render_template('inpatient/Staff.html')
 
-@main.route('/inpatient/Rooms')
+@main.route('/inpatient/rooms')
 def inpatient_management_rooms():
     return render_template('inpatient/Rooms.html')
 
-@main.route('/staff/MedicalStaffManagement')
+@main.route('/staff/')
 def medical_staff_management():
     return render_template('staff/MedicalStaffManagement.html')
 

@@ -1,3 +1,8 @@
+nav2 {
+    display: flex;
+    gap: 5em;
+}
+
 .inpatient-management-container{
     display: flex;
     justify-content: space-between;
