@@ -80,10 +80,8 @@ def initializePatients(patients):
                    None
                    )
             cursor.execute(sql, val)
-            print(f"Patient {patientID} has been assigned to bed {assigned_bed}")
-        else:
-            print(f"No more beds available. Patient {patientID} could not be assigned a bed")
 
+    print(f'{patients} patients added successfully!')
     # Commit the transaction
     db.commit()
 
@@ -104,7 +102,7 @@ def initializeEmployees(employees):
                )
         cursor.execute(sql, val)
 
-    print(f"{employees} successfully added to Employee table")
+    print(f"{employees} employees added successfully!")
     # Commit the transaction
     db.commit()
 
@@ -127,10 +125,8 @@ def initializeNurses(nurses):
                    random.randint(1,20)
                    )
             cursor.execute(sql, val)
-            print(f"Nurse {nurse} has been assigned to employee ID {assigned_EID}")
-        else:
-            print(f"No more employee IDs available. Nurse {nurse} could not be assigned a position")
 
+    print(f'{nurses} nurses added successfully!')
     # Commit the transaction
     db.commit()
 
@@ -153,10 +149,8 @@ def initializePhysicians(physicians):
                    random.randint(0, 20)
                    )
             cursor.execute(sql, val)
-            print(f"Physician {physician} has been assigned to employee ID {assigned_EID}")
-        else:
-            print(f"No more employee IDs available. Physician {physician} could not be assigned a position")
 
+    print(f'{physicians} physicians added successfully!')
     # Commit the transaction
     db.commit()
 
