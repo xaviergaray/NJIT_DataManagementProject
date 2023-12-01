@@ -30,6 +30,8 @@ window.onload = async function() {
         createRelationshipLink('View Patient Information', selectedPatientID, createPatientTable, 'patient');
         createRelationshipLink('View Assigned Physicians', selectedPatientID, createPatientTable, 'physician');
         createRelationshipLink('View Assigned Nurses', selectedPatientID, createPatientTable, 'nurse');
+        createAssignButton('Assign Physician', selectedPatientID, createPatientTable, 'physician');
+        createAssignButton('Assign Nurse', selectedPatientID, createPatientTable, 'nurse');
     }
 
     for(let patient of patients) {
@@ -44,6 +46,9 @@ window.onload = async function() {
     createRelationshipLink('View Patient Information', selectedPatientID, createPatientTable, 'patient');
     createRelationshipLink('View Assigned Physicians', selectedPatientID, createPatientTable, 'physician');
     createRelationshipLink('View Assigned Nurses', selectedPatientID, createPatientTable, 'nurse');
+    createAssignButton('Assign Physician', selectedPatientID, createPatientTable, 'physician');
+    createAssignButton('Assign Nurse', selectedPatientID, createPatientTable, 'nurse');
+
 
     document.getElementById('patientSelect').appendChild(select);
 }
@@ -220,4 +225,76 @@ function getFieldValues(field) {
     }
 
     return {fieldNames, fieldOrder};
+}
+
+function createAssignButton(text, patientID, callback, fieldValuesTitle) {
+    let button = document.createElement('button');
+    button.textContent = `Assign ${fieldValuesTitle}`;
+    button.onclick = async function() {
+        // Fetch the available physicians or nurses from the database
+        let response = await fetch(`/get-${fieldValuesTitle}`, {
+            method: 'GET',
+        });
+
+        let available = await response.json();
+
+// Create a modal dialog box
+        let modal = document.createElement('div');
+        modal.style.display = 'block';
+        modal.style.width = '200px';
+        modal.style.height = '200px';
+        modal.style.padding = '10px';
+        modal.style.background = '#fff';
+        modal.style.position = 'fixed';
+        modal.style.top = '50%';
+        modal.style.left = '50%';
+        modal.style.transform = 'translate(-50%, -50%)';
+        modal.style.zIndex = '1000';
+
+        // Create a dropdown list of available physicians or nurses
+        let select = document.createElement('select');
+        for (let item of available) {
+            let responseEmployee = await fetch('/get-employee', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    EID: item.ID,
+                })
+            });
+            let employee = await responseEmployee.json();
+
+            let option = document.createElement('option');
+            option.value = item.ID;
+            option.text = employee.Name;
+            select.appendChild(option);
+        }
+        modal.appendChild(select);
+
+        // Create the "Assign" button
+        let assignButton = document.createElement('button');
+        assignButton.textContent = 'Assign';
+        assignButton.onclick = async function() {
+            // Create a new physician-patient or nurse-patient relationship
+            let response = await fetch(`/assign-${fieldValuesTitle}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    patientID: patientID,
+                    [`${fieldValuesTitle}ID`]: select.value,
+                })
+            });
+
+            // Close the modal dialog box
+            modal.style.display = 'none';
+        }
+        modal.appendChild(assignButton);
+
+        // Append the modal dialog box to the page
+        document.body.appendChild(modal);
+    }
+    document.getElementById('relationships').appendChild(button);
 }

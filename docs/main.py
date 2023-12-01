@@ -182,10 +182,37 @@ def get_patients_physician_relationship():
 
     return relationships
 
+@main.route('/assign-physician', methods=['POST'])
+def assign_physician():
+    # Get form data
+    patientID = request.form.get('patientID')
+    physicianID = request.form.get('physicianID')
+
+    # Insert the new relationship into the database
+    query = f"INSERT INTO PatientAssignedPhysician (PatientID, PhysicianID) VALUES ('{patientID}', '{physicianID}')"
+    cursor.execute(query)
+
+    return 'Success'
+
+@main.route('/assign-nurse', methods=['POST'])
+def assign_nurse():
+    # Get form data
+    patientID = request.form.get('patientID')
+    nurseID = request.form.get('nurseID')
+    shift = request.form.get('shift')
+    dateOfCare = request.form.get('dateOfCare')
+
+    # Insert the new relationship into the database
+    query = f"INSERT INTO PatientAssignedNurse (NurseID, PatientID, Shift, DateOfCare) VALUES ('{nurseID}', '{patientID}', '{shift}', '{dateOfCare}')"
+    cursor.execute(query)
+
+    return 'Success'
+
 @main.route('/get-medical-data', methods=['POST'])
 def get_medical_data():
     # Get form data
     patientID = request.form.get('patientID')
+
     query = "SELECT * FROM PatientAssignedPhysician"
     if(patientID):
         query += f" WHERE PatientID={patientID}"
@@ -206,6 +233,45 @@ def get_patients():
     patients = [dict(zip([column[0] for column in cursor.description], row)) for row in patients]
 
     return patients
+
+@main.route('/get-physician')
+def get_physicians():
+    cursor.execute("SELECT * FROM Physician")
+    physicians = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    physicians = [dict(zip([column[0] for column in cursor.description], row)) for row in physicians]
+
+    return physicians
+
+@main.route('/get-nurse')
+def get_nurses():
+    cursor.execute("SELECT * FROM Nurse")
+    nurses = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    nurses = [dict(zip([column[0] for column in cursor.description], row)) for row in nurses]
+
+    return nurses
+
+@main.route('/get-employee', methods=['POST'])
+def get_employee():
+    # Get form data
+    EID = request.form.get('EID')
+
+    query = f"SELECT * FROM Employee WHERE ID={EID};"
+    cursor.execute(query)
+
+    # Use fetchone to get a single row
+    employee = cursor.fetchone()
+
+    if employee:
+        # Convert the result to a dictionary
+        employee_dict = dict(zip([column[0] for column in cursor.description], employee))
+        return employee_dict
+    else:
+        # Handle the case where no employee is found
+        return {"error": "Employee not found"}
 
 if __name__ == "__main__":
     main.run(debug=True)
