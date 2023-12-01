@@ -82,6 +82,26 @@ def remove_patient_by_bed_id():
 
     return f"Patient #{id}'s {param} set to {value}"
 
+@main.route('/remove-patient-relationship', methods=['POST'])
+def remove_patient_relationship():
+    # Get form data
+    patientID = request.form.get('patientID')
+    otherID = request.form.get('otherID')
+    param = request.form.get('param')
+
+    if param[-2:] == 'ID' or param[-2:] == 'id':
+        param = param[:-2]
+
+    print(param)
+    # Insert data into the database
+    sql = f"DELETE FROM PatientAssigned{param} WHERE PatientID = {patientID} AND {param}ID = {otherID};"
+    cursor.execute(sql)
+
+    # Commit the transaction
+    db.commit()
+
+    return f"Removed the relationship between patient {patientID} and employee with {param} {otherID}"
+
 
 @main.route('/get-patient-by-bed-id/<int:bedID>')
 def get_patient_by_bed_id(bedID):
