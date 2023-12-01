@@ -73,7 +73,7 @@ def initializePatients(patients):
                    randomDate(datetime(1930,1,1), datetime.now()),
                    f"Random Address {patientID}",
                    f"({random.randint(100,999)}) {random.randint(100,999)}-{random.randint(1000,9999)}",
-                   f"({random.randint(100, 999)}){random.randint(10, 99)}{random.randint(1000, 9999)}",
+                   f"{random.randint(100, 999)}-{random.randint(10, 99)}-{random.randint(1000, 9999)}",
                    assigned_bed,
                    randomDate(datetime.now() - timedelta(days=10), datetime.now()),
                    None,
