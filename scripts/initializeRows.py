@@ -87,12 +87,62 @@ def initializePatients(patients):
     # Commit the transaction
     db.commit()
 
+def initializeEmployees(employees):
+    overrideTable('Employee')
+
+    # Randomly create employees with specific IDs
+    for employeeID in range(1, employees + 1):
+        sql = "INSERT INTO Employee (ID, Name, Gender, Address, TelephoneNumber, Role, Salary, SocialSecurityNumber) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (employeeID,
+               f"Employee {employeeID}",
+               random.choice(['M', 'F']),
+               f"Random Address {employeeID}",
+               f"({random.randint(100, 999)}) {random.randint(100, 999)}-{random.randint(1000, 9999)}",
+               None,
+               f"{random.randint(10000,150000)}",
+               f"{random.randint(100, 999)}-{random.randint(10, 99)}-{random.randint(1000, 9999)}"
+               )
+        cursor.execute(sql, val)
+
+    print(f"{employees} successfully added to Employee table")
+    # Commit the transaction
+    db.commit()
+
+#TODO: nurses
+def initializeNurses(nurses):
+    overrideTable('Nurse')
+
+    # Create a list of employee IDs without roles
+    cursor.execute("SELECT ID FROM Employee WHERE Role IS NULL")
+    EIDs = [row[0] for row in cursor.fetchall()]
+
+    # Randomly assign available EIDs to nurses
+    for nurse in range(1, nurses + 1):
+        if EIDs:
+            assigned_EID = random.choice(EIDs)
+            EIDs.remove(assigned_EID)
+            sql = "INSERT INTO Nurse (ID, SurgeryTypeID, Grade, YearsOfExperience) VALUES (%s, %s, %s, %s)"
+            val = (assigned_EID,
+                   None,
+                   random.choice(['CNA','LPN','RN','APRN','DNP']),
+                   random.randint(1,20)
+                   )
+            cursor.execute(sql, val)
+            print(f"Nurse {nurse} has been assigned to employee ID {assigned_EID}")
+        else:
+            print(f"No more employee IDs available. Nurse {nurse} could not be assigned a position")
+
+    # Commit the transaction
+    db.commit()
+
 
 if __name__ == "__main__":
     # Parse command-line arguments
-    parser = argparse.ArgumentParser(description='Initialize the BedLocation, Patients, Personnel, Surgeons, SurgeryTypes, and Nurses tables with a specified number of beds, patients, personnel, surgeons, surgery types, and nurses.')
+    parser = argparse.ArgumentParser(description='Initialize the ClinicBed, Patient, Employee, Surgeon, SurgeryType, and Nurse tables with a specified number of beds, patients, personnel, surgeons, surgery types, and nurses.')
     parser.add_argument('-beds', type=int, help='the number of beds to insert')
     parser.add_argument('-patients', type=int, help='the number of patients to insert')
+    parser.add_argument('-employees', type=int, help='the number of employees to insert')
+    parser.add_argument('-nurses', type=int, help='the number of nurses to insert')
     args = parser.parse_args()
 
     # Initialize the rows
@@ -100,3 +150,7 @@ if __name__ == "__main__":
         initializeBedsTable(args.beds)
     if args.patients is not None:
         initializePatients(args.patients)
+    if args.employees is not None:
+        initializeEmployees(args.employees)
+    if args.nurses is not None:
+        initializeNurses(args.nurses)
