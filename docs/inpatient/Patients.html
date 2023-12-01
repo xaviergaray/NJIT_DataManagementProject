@@ -4,15 +4,50 @@
     <meta charset="UTF-8">
     <title>NMA - In-patient Management</title>
     <link rel="stylesheet" type="text/css" href="../styles.css">
-    <link rel="stylesheet" type="text/css" href="additionalStyles.css">
+    <link rel="stylesheet" type="text/css" href="commonStyles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <script src="patients.js"></script>
     <!-- Add some style for the table -->
     <style>
+        :root {
+            --userInputLinksMargin: 5vw;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
+
+        table td {
+            width: 20%;
+        }
+
+        table td:nth-child(1) {
+            width: 2%;
+            font-weight: bold;
+        }
+
+        #patientTable {
+            width: 100%;
+            margin-left: 0;
+        }
+
+        .userInputRow {
+            display: flex;
+            justify-content: flex-start;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .userInputRow > *:not(:last-child) {
+            margin-right: var(--userInputLinksMargin);
+        }
+
+        /* Apply margin to create space between links inside the "relationships" div */
+        #relationships a {
+            margin-right: var(--userInputLinksMargin); /* Adjust the value based on your preferred spacing */
+        }
+
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
@@ -39,8 +74,14 @@
             <h2><a href="/inpatient/rooms">Rooms</a></h2>
         </nav2>
 
-        <div id="patientSelect">
+        <div class="userInputRow">
+            <div id="patientSelect">
             <!-- Rows from the database will be inserted into a dropbox here -->
+            </div>
+
+            <div id="relationships">
+                <!-- Links showing patient relationships will be placed here -->
+            </div>
         </div>
 
         <div id="patientTable">

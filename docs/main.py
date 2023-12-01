@@ -102,6 +102,68 @@ def get_patient():
 
     return patient
 
+@main.route('/get-patient-nurse-relationship', methods=['POST'])
+def get_patients_nurse_relationship():
+    # Get form data
+    patientID = request.form.get('patientID')
+    nurseID = request.form.get('nurseID')
+
+    # Start building the SQL query
+    query = "SELECT * FROM PatientAssignedNurse WHERE "
+
+    # Add conditions to the query based on provided data
+    conditions = []
+    if patientID is not None:
+        conditions.append(f"PatientID={patientID}")
+    if nurseID is not None:
+        conditions.append(f"NurseID={nurseID}")
+
+    # If no conditions were added, remove the WHERE clause
+    if conditions:
+        query += " AND ".join(conditions)
+    else:
+        query = "SELECT * FROM PatientAssignedNurse"
+
+    cursor.execute(query)
+    relationships = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    relationships = [dict(zip([column[0] for column in cursor.description], row)) for row in relationships]
+
+    return relationships
+
+@main.route('/get-patient-physician-relationship', methods=['POST'])
+def get_patients_physician_relationship():
+    # Get form data
+    patientID = request.form.get('patientID')
+    physicianID = request.form.get('physicianID')
+
+    # Start building the SQL query
+    query = "SELECT * FROM PatientAssignedPhysician WHERE "
+
+    # Add conditions to the query based on provided data
+    conditions = []
+    if patientID is not None:
+        conditions.append(f"PatientID={patientID}")
+        if physicianID is not None:
+            conditions.append(f"AND PhysicianID={physicianID}")
+    elif physicianID is not None:
+        conditions.append(f"PhysicianID={physicianID}")
+
+    # If no conditions were added, remove the WHERE clause
+    if conditions:
+        query += " AND ".join(conditions)
+    else:
+        query = "SELECT * FROM PatientAssignedPhysician"
+
+    cursor.execute(query)
+    relationships = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    relationships = [dict(zip([column[0] for column in cursor.description], row)) for row in relationships]
+
+    return relationships
+
 @main.route('/get-patients')
 def get_patients():
     cursor.execute("SELECT * FROM Patient")
