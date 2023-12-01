@@ -44,7 +44,7 @@ CREATE TABLE Employee (
 CREATE TABLE Nurse (
     ID INT PRIMARY KEY,
     SurgeryTypeID INT,
-    Grade INT,
+    Grade ENUM('CNA','LPN','RN','APRN','DNP'),
     YearsOfExperience INT,
     FOREIGN KEY (ID) REFERENCES Employee(ID),
     FOREIGN KEY (SurgeryTypeID) REFERENCES SurgeryType(ID)
