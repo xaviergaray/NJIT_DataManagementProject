@@ -230,6 +230,7 @@ function getFieldValues(field) {
 function createAssignButton(text, patientID, callback, fieldValuesTitle) {
     let button = document.createElement('button');
     button.textContent = `Assign ${fieldValuesTitle}`;
+    button.className = 'button';
     button.onclick = async function() {
         // Fetch the available physicians or nurses from the database
         let response = await fetch(`/get-${fieldValuesTitle}`, {
@@ -238,21 +239,19 @@ function createAssignButton(text, patientID, callback, fieldValuesTitle) {
 
         let available = await response.json();
 
-// Create a modal dialog box
+        // Create a modal dialog box
         let modal = document.createElement('div');
-        modal.style.display = 'block';
-        modal.style.width = '200px';
-        modal.style.height = '200px';
-        modal.style.padding = '10px';
-        modal.style.background = '#fff';
-        modal.style.position = 'fixed';
-        modal.style.top = '50%';
-        modal.style.left = '50%';
-        modal.style.transform = 'translate(-50%, -50%)';
-        modal.style.zIndex = '1000';
+        modal.className = 'modal';
+
+        // Create a container for the dropdown and button
+        let container = document.createElement('div');
+        container.className = 'dropdown-button-container';
+        modal.appendChild(container);
 
         // Create a dropdown list of available physicians or nurses
         let select = document.createElement('select');
+        let shiftDropdown;
+        let dateTextbox;
         for (let item of available) {
             let responseEmployee = await fetch('/get-employee', {
                 method: 'POST',
@@ -269,32 +268,117 @@ function createAssignButton(text, patientID, callback, fieldValuesTitle) {
             option.value = item.ID;
             option.text = employee.Name;
             select.appendChild(option);
+
         }
-        modal.appendChild(select);
+        container.appendChild(select);
+
+        if (fieldValuesTitle === 'nurse') {
+                // Create a dropdown for the shift
+                shiftDropdown = document.createElement('select');
+                let shifts = [1, 2, 3];
+                for (let shift of shifts) {
+                    let option = document.createElement('option');
+                    option.value = shift;
+                    option.text = 'Shift ' + shift;
+                    shiftDropdown.appendChild(option);
+                }
+                container.appendChild(shiftDropdown);
+
+                // Create a textbox for the date of care
+                dateTextbox = document.createElement('input');
+                dateTextbox.type = 'date';
+                container.appendChild(dateTextbox);
+        }
 
         // Create the "Assign" button
         let assignButton = document.createElement('button');
         assignButton.textContent = 'Assign';
+        assignButton.className = 'button';
         assignButton.onclick = async function() {
-            // Create a new physician-patient or nurse-patient relationship
-            let response = await fetch(`/assign-${fieldValuesTitle}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    patientID: patientID,
-                    [`${fieldValuesTitle}ID`]: select.value,
-                })
-            });
+            // Get the ID of the selected employee
+            let selectedID = select.value;
+
+            // Fetch the current assignments for the patient
+            let responseAssignments;
+            if (fieldValuesTitle === 'nurse') {
+                responseAssignments = await fetch('/get-patient-nurse-relationship', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        patientID: patientID,
+                        nurseID: selectedID,
+                    })
+                });
+            } else if (fieldValuesTitle === 'physician') {
+                responseAssignments = await fetch('/get-patient-physician-relationship', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        patientID: patientID,
+                        physicianID: selectedID,
+                    })
+                });
+            }
+
+            let assignments = await responseAssignments.json();
+
+            // Check if the selected employee is already assigned
+            if (assignments.length > 0) {
+                alert('This employee is already assigned to the patient.');
+                return;
+            }
+
+            if (fieldValuesTitle === 'nurse') {
+                // Create a new nurse-patient relationship
+                let response = await fetch(`/assign-${fieldValuesTitle}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        patientID: patientID,
+                        nurseID: select.value,
+                        shift: shiftDropdown.value,
+                        dateOfCare: dateTextbox.value
+                    })
+                });
+            } else
+            {
+                // Create a new physician-patient
+                let response = await fetch(`/assign-${fieldValuesTitle}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        patientID: patientID,
+                        physicianID: select.value,
+                    })
+                });
+            }
+
 
             // Close the modal dialog box
             modal.style.display = 'none';
         }
-        modal.appendChild(assignButton);
+        container.appendChild(assignButton);
+
+        // Create the "Cancel" button
+        let cancelButton = document.createElement('button');
+        cancelButton.textContent = 'Cancel';
+        cancelButton.className = 'button';
+        cancelButton.onclick = function() {
+            // Close the modal dialog box
+            modal.style.display = 'none';
+        }
+        container.appendChild(cancelButton);
 
         // Append the modal dialog box to the page
         document.body.appendChild(modal);
     }
-    document.getElementById('relationships').appendChild(button);
+    document.getElementById('userInputRow').appendChild(button);
 }
