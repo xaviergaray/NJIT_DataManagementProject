@@ -14,6 +14,6 @@ Term project for CS 631 851 at NJIT. Supplementary information can be found [her
 4. In the terminal, navigate to the working directory, ensure pip is up to date and run the following commands:
    * "pip install Flask"
    * "git clone https://github.com/xaviergaray/NJIT_DataManagementProject.git"
-   * "python NJIT_DataManagementProject\scripts\initializeRows.py" (*Here you can add -h to see specific configuration options*)
+   * "python NJIT_DataManagementProject\scripts\initializeRows.py -default" (*Here you can add -h to see specific configuration options*)
    * "python NJIT_DataManagementProject\docs\main.py"
 5. On your browser, go to http://127.0.0.1:5000
