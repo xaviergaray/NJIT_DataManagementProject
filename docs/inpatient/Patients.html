@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <title>NMA - In-patient Management</title>
     <link rel="stylesheet" type="text/css" href="../styles.css">
-    <link rel="stylesheet" type="text/css" href="additionalStyles.css">
+    <link rel="stylesheet" type="text/css" href="commonStyles.css">
+    <link rel="stylesheet" type="text/css" href="patient.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="patients.js"></script>
 </head>
 <body>
     <div class="container">
@@ -16,6 +18,21 @@
             <h2><a href="/inpatient/staff">Staff</a></h2>
             <h2><a href="/inpatient/rooms">Rooms</a></h2>
         </nav2>
+
+        <div id="userInputRow">
+            <div id="patientSelect">
+            <!-- Rows from the database will be inserted into a dropbox here -->
+            </div>
+
+            <div id="relationships">
+                <!-- Links showing patient relationships will be placed here -->
+            </div>
+        </div>
+
+        <div id="patientTable">
+            <!-- Patient data from the database will be shown here -->
+        </div>
+
     </div>
 </body>
 </html>

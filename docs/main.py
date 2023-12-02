@@ -82,6 +82,26 @@ def remove_patient_by_bed_id():
 
     return f"Patient #{id}'s {param} set to {value}"
 
+@main.route('/remove-patient-relationship', methods=['POST'])
+def remove_patient_relationship():
+    # Get form data
+    patientID = request.form.get('patientID')
+    otherID = request.form.get('otherID')
+    param = request.form.get('param')
+
+    if param[-2:] == 'ID' or param[-2:] == 'id':
+        param = param[:-2]
+
+    print(param)
+    # Insert data into the database
+    sql = f"DELETE FROM PatientAssigned{param} WHERE PatientID = {patientID} AND {param}ID = {otherID};"
+    cursor.execute(sql)
+
+    # Commit the transaction
+    db.commit()
+
+    return f"Removed the relationship between patient {patientID} and employee with {param} {otherID}"
+
 
 @main.route('/get-patient-by-bed-id/<int:bedID>')
 def get_patient_by_bed_id(bedID):
@@ -93,6 +113,117 @@ def get_patient_by_bed_id(bedID):
 
     return {"Name": "None"}
 
+@main.route('/get-patient/', methods=['POST'])
+def get_patient():
+    # Get form data
+    id = request.form.get('ID')
+    cursor.execute(f"SELECT * FROM Patient WHERE ID={id};")
+    patient = cursor.fetchall()
+
+    return patient
+
+@main.route('/get-patient-nurse-relationship', methods=['POST'])
+def get_patients_nurse_relationship():
+    # Get form data
+    patientID = request.form.get('patientID')
+    nurseID = request.form.get('nurseID')
+
+    # Start building the SQL query
+    query = "SELECT * FROM PatientAssignedNurse WHERE "
+
+    # Add conditions to the query based on provided data
+    conditions = []
+    if patientID is not None:
+        conditions.append(f"PatientID={patientID}")
+    if nurseID is not None:
+        conditions.append(f"NurseID={nurseID}")
+
+    # If no conditions were added, remove the WHERE clause
+    if conditions:
+        query += " AND ".join(conditions)
+    else:
+        query = "SELECT * FROM PatientAssignedNurse"
+
+    cursor.execute(query)
+    relationships = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    relationships = [dict(zip([column[0] for column in cursor.description], row)) for row in relationships]
+
+    return relationships
+
+@main.route('/get-patient-physician-relationship', methods=['POST'])
+def get_patients_physician_relationship():
+    # Get form data
+    patientID = request.form.get('patientID')
+    physicianID = request.form.get('physicianID')
+
+    # Start building the SQL query
+    query = "SELECT * FROM PatientAssignedPhysician WHERE "
+
+    # Add conditions to the query based on provided data
+    conditions = []
+    if patientID is not None:
+        conditions.append(f"PatientID={patientID}")
+    if physicianID is not None:
+        conditions.append(f"PhysicianID={physicianID}")
+
+    # If no conditions were added, remove the WHERE clause
+    if conditions:
+        query += " AND ".join(conditions)
+    else:
+        query = "SELECT * FROM PatientAssignedPhysician"
+
+    cursor.execute(query)
+    relationships = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    relationships = [dict(zip([column[0] for column in cursor.description], row)) for row in relationships]
+
+    return relationships
+
+@main.route('/assign-physician', methods=['POST'])
+def assign_physician():
+    # Get form data
+    patientID = request.form.get('patientID')
+    physicianID = request.form.get('physicianID')
+
+    # Insert the new relationship into the database
+    query = f"INSERT INTO PatientAssignedPhysician (PatientID, PhysicianID) VALUES ('{patientID}', '{physicianID}')"
+    cursor.execute(query)
+
+    return 'Success'
+
+@main.route('/assign-nurse', methods=['POST'])
+def assign_nurse():
+    # Get form data
+    patientID = request.form.get('patientID')
+    nurseID = request.form.get('nurseID')
+    shift = request.form.get('shift')
+    dateOfCare = request.form.get('dateOfCare')
+
+    # Insert the new relationship into the database
+    query = f"INSERT INTO PatientAssignedNurse (NurseID, PatientID, Shift, DateOfCare) VALUES ('{nurseID}', '{patientID}', '{shift}', '{dateOfCare}')"
+    cursor.execute(query)
+
+    return 'Success'
+
+@main.route('/get-medical-data', methods=['POST'])
+def get_medical_data():
+    # Get form data
+    patientID = request.form.get('patientID')
+
+    query = "SELECT * FROM PatientAssignedPhysician"
+    if(patientID):
+        query += f" WHERE PatientID={patientID}"
+
+    cursor.execute(query)
+    medicalData = cursor.fetchall()
+
+    medicalData = [dict(zip([column[0] for column in cursor.description], row)) for row in medicalData]
+
+    return medicalData
+
 @main.route('/get-patients')
 def get_patients():
     cursor.execute("SELECT * FROM Patient")
@@ -102,6 +233,45 @@ def get_patients():
     patients = [dict(zip([column[0] for column in cursor.description], row)) for row in patients]
 
     return patients
+
+@main.route('/get-physician')
+def get_physicians():
+    cursor.execute("SELECT * FROM Physician")
+    physicians = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    physicians = [dict(zip([column[0] for column in cursor.description], row)) for row in physicians]
+
+    return physicians
+
+@main.route('/get-nurse')
+def get_nurses():
+    cursor.execute("SELECT * FROM Nurse")
+    nurses = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    nurses = [dict(zip([column[0] for column in cursor.description], row)) for row in nurses]
+
+    return nurses
+
+@main.route('/get-employee', methods=['POST'])
+def get_employee():
+    # Get form data
+    EID = request.form.get('EID')
+
+    query = f"SELECT * FROM Employee WHERE ID={EID};"
+    cursor.execute(query)
+
+    # Use fetchone to get a single row
+    employee = cursor.fetchone()
+
+    if employee:
+        # Convert the result to a dictionary
+        employee_dict = dict(zip([column[0] for column in cursor.description], employee))
+        return employee_dict
+    else:
+        # Handle the case where no employee is found
+        return {"error": "Employee not found"}
 
 if __name__ == "__main__":
     main.run(debug=True)
