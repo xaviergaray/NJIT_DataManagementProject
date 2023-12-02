@@ -1,8 +1,7 @@
 # NJIT_DataManagementProject
 Term project for CS 631 851 at NJIT. Supplementary information can be found [here](https://docs.google.com/document/d/1sM_TkhyeoWbIAFcrFBpwjBQ53cSiwFLRUVbyaL_cA-M/edit?usp=sharing).
 
-## Disclaimer
-This project is intended to show basic communication between a database and a website, as well as a comprehensive database setup. It is not created with security or optimization in mind as that is outside the scope of the project.
+**Disclaimer**: This project is intended to show basic communication between a database and a website, as well as a comprehensive database setup. It is not created with security or optimization in mind as that is outside the scope of the project.
 
 ## Dependencies
 * Flask
