@@ -30,6 +30,20 @@ window.onload = async function() {
         createRelationshipLink('View Patient Information', selectedPatientID, createPatientTable, 'patient');
         createRelationshipLink('View Assigned Physicians', selectedPatientID, createPatientTable, 'physician');
         createRelationshipLink('View Assigned Nurses', selectedPatientID, createPatientTable, 'nurse');
+        // Get the parent element
+        let parentElement = document.getElementById('userInputRow');
+
+        // Remove the "Assign Physician" button if it exists
+        let assignPhysicianButton = parentElement.querySelector('.button');
+        if (assignPhysicianButton) {
+            parentElement.removeChild(assignPhysicianButton);
+        }
+
+        // Remove the "Assign Nurse" button if it exists
+        let assignNurseButton = parentElement.querySelector('.button');
+        if (assignNurseButton) {
+            parentElement.removeChild(assignNurseButton);
+        }
         createAssignButton('Assign Physician', selectedPatientID, createPatientTable, 'physician');
         createAssignButton('Assign Nurse', selectedPatientID, createPatientTable, 'nurse');
     }
@@ -46,6 +60,20 @@ window.onload = async function() {
     createRelationshipLink('View Patient Information', selectedPatientID, createPatientTable, 'patient');
     createRelationshipLink('View Assigned Physicians', selectedPatientID, createPatientTable, 'physician');
     createRelationshipLink('View Assigned Nurses', selectedPatientID, createPatientTable, 'nurse');
+    // Get the parent element
+    let parentElement = document.getElementById('userInputRow');
+
+    // Remove the "Assign Physician" button if it exists
+    let assignPhysicianButton = parentElement.querySelector('.button');
+    if (assignPhysicianButton) {
+        parentElement.removeChild(assignPhysicianButton);
+    }
+
+    // Remove the "Assign Nurse" button if it exists
+    let assignNurseButton = parentElement.querySelector('.button');
+    if (assignNurseButton) {
+        parentElement.removeChild(assignNurseButton);
+    }
     createAssignButton('Assign Physician', selectedPatientID, createPatientTable, 'physician');
     createAssignButton('Assign Nurse', selectedPatientID, createPatientTable, 'nurse');
 
