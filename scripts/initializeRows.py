@@ -213,7 +213,7 @@ def initializeMedicalData(MedicalData):
     # Commit the transaction
     db.commit()
 
-def initializeSurgeryType(surgeryType):
+def initializeSurgeryTypes(surgeryType):
     overrideTable('surgeryType')
 
     for typeID in range(1, surgeryType + 1):
@@ -230,7 +230,7 @@ def initializeSurgeryType(surgeryType):
     # Commit the transaction
     db.commit()
 
-def initializeSurgerySkill(surgerySkill):
+def initializeSurgerySkills(surgerySkill):
     overrideTable('SurgerySkill')
     for skillID in range(1, surgerySkill + 1):
         cursor.execute(f"INSERT INTO SurgerySkill (ID, Description) VALUES ({skillID}, 'Description of skill {skillID}')")
@@ -239,7 +239,7 @@ def initializeSurgerySkill(surgerySkill):
     # Commit the transaction
     db.commit()
 
-def initializeSurgeryTypeSkill(surgeryTypeSkills):
+def initializeSurgeryTypeSkills(surgeryTypeSkills):
     overrideTable('SurgeryTypeSkill')
 
     # Create a list of type IDs
@@ -256,10 +256,56 @@ def initializeSurgeryTypeSkill(surgeryTypeSkills):
         for skillID in skillIDs:
             pairs.append((typeID, skillID))
 
-    for pair in pairs:
-        cursor.execute(f"INSERT INTO SurgeryTypeSkill (SurgeryTypeID, SkillID) VALUES ({pair[0]}, {pair[1]})")
+    for typeSkill in range(1, surgeryTypeSkills):
+        if pairs:
+            pair = random.choice(pairs)
+            pairs.remove(pair)
+            cursor.execute(f"INSERT INTO SurgeryTypeSkill (SurgeryTypeID, SkillID) VALUES ({pair[0]}, {pair[1]})")
+        else:
+            print("Could not add all requested surgery type skills. Ensure there are enough combinations of typeID and typeSkill")
 
     print(f'{surgeryTypeSkills} surgery type skills added successfully!')
+    # Commit the transaction
+    db.commit()
+
+def initializeSurgeries(surgeries):
+    overrideTable('Surgery')
+
+    # Create a list of surgery types
+    cursor.execute("SELECT ID FROM SurgeryType")
+    typeIDs = [row[0] for row in cursor.fetchall()]
+
+    # Create a list of surgeons
+    cursor.execute("SELECT ID FROM Surgeon")
+    surgeonIDs = [row[0] for row in cursor.fetchall()]
+
+    # Create a list of patients
+    cursor.execute("SELECT ID FROM Patient")
+    patientIDs = [row[0] for row in cursor.fetchall()]
+
+    # Create unique trios
+    trios = []
+    for typeID in typeIDs:
+        for surgeonID in surgeonIDs:
+            for patientID in patientIDs:
+                trios.append((typeID, surgeonID, patientID))
+
+    for surgery in range(1, surgeries):
+        if trios:
+            trio = random.choice(trios)
+            trios.remove(trio)
+            sql = "INSERT INTO Surgery (SurgeryTypeID, SurgeonID, PatientID, OperationTheatreNumber, SurgeryDate) VALUES (%s, %s, %s, %s, %s)"
+            val = (trio[0],
+                   trio[1],
+                   trio[2],
+                   f'OR {surgery}',
+                   randomDate(datetime.now(), datetime.now() + timedelta(days=30)),
+                   )
+            cursor.execute(sql, val)
+        else:
+            print("Could not add all requested surgeries. Ensure there are enough combinations of typeID, surgeonID, and patientID")
+
+    print(f'{surgeries} surgeries added successfully!')
     # Commit the transaction
     db.commit()
 
@@ -331,18 +377,20 @@ def initializeRelationships(rel1, rel2, n):
     db.commit()
 
 def defaultRows():
-        initializeBedsTable(700)
-        initializePatients(623)
-        initializeEmployees(721)
-        initializeNurses(200)
-        initializeRelationships('patient', 'nurse', 73)
-        initializePhysicians(130)
-        initializeRelationships('patient', 'physician', 95)
-        initializeMedicalData(423)
-        initializeSurgeons(20)
-        initializeSurgerySkill(14)
-        initializeSurgeryType(10)
-        initializeSurgeryTypeSkill(10)
+    print('Creating tables, please do not interrupt the process.')
+    initializeBedsTable(700)
+    initializePatients(623)
+    initializeEmployees(721)
+    initializeNurses(200)
+    initializeRelationships('patient', 'nurse', 73)
+    initializePhysicians(130)
+    initializeRelationships('patient', 'physician', 95)
+    initializeMedicalData(423)
+    initializeSurgeons(20)
+    initializeSurgerySkills(14)
+    initializeSurgeryTypes(10)
+    initializeSurgeryTypeSkills(10)
+    initializeSurgeries(15)
 
 if __name__ == "__main__":
     # Parse command-line arguments
@@ -358,6 +406,7 @@ if __name__ == "__main__":
     parser.add_argument('-surgeryskills', type=int, help='the number of surgery skills to insert')
     parser.add_argument('-surgerytypes', type=int, help='the number of surgery types to insert')
     parser.add_argument('-surgerytypeskills', type=int, help='the number of surgery type skills to insert')
+    parser.add_argument('-surgeries', type=int, help='the number of surgeries to insert')
     parser.add_argument('-default', action='store_true', help='initialize as many rows in the database as this script allows')
     args = parser.parse_args()
 
@@ -384,8 +433,10 @@ if __name__ == "__main__":
     if args.surgeons is not None:
         initializeSurgeons(args.surgeons)
     if args.surgeryskills is not None:
-        initializeSurgerySkill(args.surgeryskills)
+        initializeSurgerySkills(args.surgeryskills)
     if args.surgerytypes is not None:
-        initializeSurgeryType(args.surgerytypes)
+        initializeSurgeryTypes(args.surgerytypes)
     if args.surgerytypeskills is not None:
-        initializeSurgeryTypeSkill(args.surgerytypeskills)
+        initializeSurgeryTypeSkills(args.surgerytypeskills)
+    if args.surgeries is not None:
+        initializeSurgeries(args.surgeries)
