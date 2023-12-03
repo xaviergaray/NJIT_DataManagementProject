@@ -213,6 +213,15 @@ def initializeMedicalData(MedicalData):
     # Commit the transaction
     db.commit()
 
+def initializeSurgerySkill(surgerySkill):
+    overrideTable('SurgerySkill')
+    for skillID in range(1, surgerySkill + 1):
+        cursor.execute(f"INSERT INTO SurgerySkill (ID, Description) VALUES ({skillID}, 'Description of skill {skillID}')")
+
+    print(f'{surgerySkill} surgery skills added successfully!')
+    # Commit the transaction
+    db.commit()
+
 def initializeRelationships(rel1, rel2, n):
     bFound = False
     if rel1 == 'patient' or rel2 == 'patient':
@@ -290,6 +299,7 @@ def defaultRows():
         initializeRelationships('patient', 'physician', 95)
         initializeMedicalData(423)
         initializeSurgeons(20)
+        initializeSurgerySkill(14)
 
 if __name__ == "__main__":
     # Parse command-line arguments
@@ -302,6 +312,7 @@ if __name__ == "__main__":
     parser.add_argument('-relationship', nargs=3, metavar=('rel1', 'rel2', 'n'), help='takes 3 arguments: rel1 and rel2 for the relationships and n for the amount')
     parser.add_argument('-medicaldata', type=int, help='the amount of medical information to insert for random patients')
     parser.add_argument('-surgeons', type=int, help='the number of surgeons to insert')
+    parser.add_argument('-surgeryskills', type=int, help='the number of surgery skills to insert')
     parser.add_argument('-default', action='store_true', help='initialize as many rows in the database as this script allows')
     args = parser.parse_args()
 
@@ -327,3 +338,5 @@ if __name__ == "__main__":
         initializeMedicalData(args.medicaldata)
     if args.surgeons is not None:
         initializeSurgeons(args.surgeons)
+    if args.surgeryskills is not None:
+        initializeSurgerySkill(args.surgeryskills)
