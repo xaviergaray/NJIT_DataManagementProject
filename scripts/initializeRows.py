@@ -125,6 +125,8 @@ def initializeNurses(nurses):
                    random.randint(1,20)
                    )
             cursor.execute(sql, val)
+        else:
+            print("Could not add all requested nurses. Require more employees first.")
 
     print(f'{nurses} nurses added successfully!')
     # Commit the transaction
@@ -137,7 +139,7 @@ def initializePhysicians(physicians):
     cursor.execute("SELECT ID FROM Employee WHERE Role IS NULL")
     EIDs = [row[0] for row in cursor.fetchall()]
 
-    # Randomly assign available EIDs to nurses
+    # Randomly assign available EIDs to physician
     for physician in range(1, physicians + 1):
         if EIDs:
             assigned_EID = random.choice(EIDs)
@@ -149,8 +151,36 @@ def initializePhysicians(physicians):
                    random.randint(0, 20)
                    )
             cursor.execute(sql, val)
+        else:
+            print("Could not add all requested physicians. Require more employees first.")
 
     print(f'{physicians} physicians added successfully!')
+    # Commit the transaction
+    db.commit()
+
+def initializeSurgeons(surgeons):
+    overrideTable('Surgeon')
+
+    # Create a list of physician IDs
+    cursor.execute("SELECT ID FROM Physician")
+    EIDs = [row[0] for row in cursor.fetchall()]
+
+    # Randomly assign available EIDs to surgeon
+    for surgeon in range(1, surgeons + 1):
+        if EIDs:
+            assigned_EID = random.choice(EIDs)
+            EIDs.remove(assigned_EID)
+            sql = "INSERT INTO Surgeon (ID, ContractType, ContractDuration, ContractAmount) VALUES (%s, %s, %s, %s)"
+            val = (assigned_EID,
+                   None,
+                   random.randint(1,10),
+                   random.randint(10, 20) * 30000
+                   )
+            cursor.execute(sql, val)
+        else:
+            print("Could not add all requested surgeons. Require more physicians first.")
+
+    print(f'{surgeons} surgeons added successfully!')
     # Commit the transaction
     db.commit()
 
@@ -259,6 +289,7 @@ def defaultRows():
         initializePhysicians(130)
         initializeRelationships('patient', 'physician', 95)
         initializeMedicalData(423)
+        initializeSurgeons(20)
 
 if __name__ == "__main__":
     # Parse command-line arguments
@@ -269,7 +300,8 @@ if __name__ == "__main__":
     parser.add_argument('-nurses', type=int, help='the number of nurses to insert')
     parser.add_argument('-physicians', type=int, help='the number of physicians to insert')
     parser.add_argument('-relationship', nargs=3, metavar=('rel1', 'rel2', 'n'), help='takes 3 arguments: rel1 and rel2 for the relationships and n for the amount')
-    parser.add_argument('-medicaldata', type=int, help='the amount of medicalinformation to insert for random patients')
+    parser.add_argument('-medicaldata', type=int, help='the amount of medical information to insert for random patients')
+    parser.add_argument('-surgeons', type=int, help='the number of surgeons to insert')
     parser.add_argument('-default', action='store_true', help='initialize as many rows in the database as this script allows')
     args = parser.parse_args()
 
@@ -293,3 +325,5 @@ if __name__ == "__main__":
         initializePhysicians(args.physicians)
     if args.medicaldata is not None:
         initializeMedicalData(args.medicaldata)
+    if args.surgeons is not None:
+        initializeSurgeons(args.surgeons)
