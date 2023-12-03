@@ -78,12 +78,10 @@ CREATE TABLE Physician (
  -- "...Whereas for each surgeon data pertaining to his or her specialty and contract are captured. Contract data for surgeons include the type of contract and the length of the contract (in years)."
 CREATE TABLE Surgeon (
     ID INT PRIMARY KEY,
-    Specialty INT,
     ContractType VARCHAR(50),
     ContractDuration INT,
     ContractAmount INT,
-    FOREIGN KEY (ID) REFERENCES Physician(ID),
-    FOREIGN KEY (Specialty) REFERENCES SurgeryType(ID)
+    FOREIGN KEY (ID) REFERENCES Physician(ID)
 );
 
 -- "nursing unit, room number, and bed number"
