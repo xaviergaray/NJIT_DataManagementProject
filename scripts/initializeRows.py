@@ -394,7 +394,7 @@ def defaultRows():
 
 if __name__ == "__main__":
     # Parse command-line arguments
-    parser = argparse.ArgumentParser(description='Initialize the ClinicBed, Patient, Employee, Surgeon, SurgeryType, and Nurse tables with a specified number of beds, patients, personnel, surgeons, surgery types, and nurses.')
+    parser = argparse.ArgumentParser(description='Initialize several tables within the NJIT_DataMGMT database.')
     parser.add_argument('-beds', type=int, help='the number of beds to insert')
     parser.add_argument('-patients', type=int, help='the number of patients to insert')
     parser.add_argument('-employees', type=int, help='the number of employees to insert')
