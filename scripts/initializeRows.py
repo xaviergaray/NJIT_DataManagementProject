@@ -213,6 +213,23 @@ def initializeMedicalData(MedicalData):
     # Commit the transaction
     db.commit()
 
+def initializeSurgeryType(surgeryType):
+    overrideTable('surgeryType')
+
+    for typeID in range(1, surgeryType + 1):
+        sql = "INSERT INTO SurgeryType (ID, Name, Category, AnatomicalLocation, SpecialNeeds) VALUES (%s, %s, %s, %s, %s)"
+        val = (typeID,
+               f'Type Name #{typeID}',
+               random.choice(['H', '0']),
+               f'Location #{typeID}',
+               f'Special needs #{typeID}'
+               )
+        cursor.execute(sql, val)
+
+    print(f'{surgeryType} surgery skills added successfully!')
+    # Commit the transaction
+    db.commit()
+
 def initializeSurgerySkill(surgerySkill):
     overrideTable('SurgerySkill')
     for skillID in range(1, surgerySkill + 1):
@@ -313,6 +330,7 @@ if __name__ == "__main__":
     parser.add_argument('-medicaldata', type=int, help='the amount of medical information to insert for random patients')
     parser.add_argument('-surgeons', type=int, help='the number of surgeons to insert')
     parser.add_argument('-surgeryskills', type=int, help='the number of surgery skills to insert')
+    parser.add_argument('-surgerytypes', type=int, help='the number of surgery types to insert')
     parser.add_argument('-default', action='store_true', help='initialize as many rows in the database as this script allows')
     args = parser.parse_args()
 
@@ -340,3 +358,5 @@ if __name__ == "__main__":
         initializeSurgeons(args.surgeons)
     if args.surgeryskills is not None:
         initializeSurgerySkill(args.surgeryskills)
+    if args.surgerytypes is not None:
+        initializeSurgeryType(args.surgerytypes)
