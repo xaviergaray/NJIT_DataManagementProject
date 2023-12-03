@@ -226,7 +226,7 @@ def initializeSurgeryType(surgeryType):
                )
         cursor.execute(sql, val)
 
-    print(f'{surgeryType} surgery skills added successfully!')
+    print(f'{surgeryType} surgery types added successfully!')
     # Commit the transaction
     db.commit()
 
@@ -236,6 +236,30 @@ def initializeSurgerySkill(surgerySkill):
         cursor.execute(f"INSERT INTO SurgerySkill (ID, Description) VALUES ({skillID}, 'Description of skill {skillID}')")
 
     print(f'{surgerySkill} surgery skills added successfully!')
+    # Commit the transaction
+    db.commit()
+
+def initializeSurgeryTypeSkill(surgeryTypeSkills):
+    overrideTable('SurgeryTypeSkill')
+
+    # Create a list of type IDs
+    cursor.execute("SELECT ID FROM SurgeryType")
+    typeIDs = [row[0] for row in cursor.fetchall()]
+
+    # Create a list of skill IDs
+    cursor.execute("SELECT ID FROM SurgerySkill")
+    skillIDs = [row[0] for row in cursor.fetchall()]
+
+    # Create unique pairs
+    pairs = []
+    for typeID in typeIDs:
+        for skillID in skillIDs:
+            pairs.append((typeID, skillID))
+
+    for pair in pairs:
+        cursor.execute(f"INSERT INTO SurgeryTypeSkill (SurgeryTypeID, SkillID) VALUES ({pair[0]}, {pair[1]})")
+
+    print(f'{surgeryTypeSkills} surgery type skills added successfully!')
     # Commit the transaction
     db.commit()
 
@@ -317,6 +341,8 @@ def defaultRows():
         initializeMedicalData(423)
         initializeSurgeons(20)
         initializeSurgerySkill(14)
+        initializeSurgeryType(10)
+        initializeSurgeryTypeSkill(10)
 
 if __name__ == "__main__":
     # Parse command-line arguments
@@ -331,6 +357,7 @@ if __name__ == "__main__":
     parser.add_argument('-surgeons', type=int, help='the number of surgeons to insert')
     parser.add_argument('-surgeryskills', type=int, help='the number of surgery skills to insert')
     parser.add_argument('-surgerytypes', type=int, help='the number of surgery types to insert')
+    parser.add_argument('-surgerytypeskills', type=int, help='the number of surgery type skills to insert')
     parser.add_argument('-default', action='store_true', help='initialize as many rows in the database as this script allows')
     args = parser.parse_args()
 
@@ -360,3 +387,5 @@ if __name__ == "__main__":
         initializeSurgerySkill(args.surgeryskills)
     if args.surgerytypes is not None:
         initializeSurgeryType(args.surgerytypes)
+    if args.surgerytypeskills is not None:
+        initializeSurgeryTypeSkill(args.surgerytypeskills)
