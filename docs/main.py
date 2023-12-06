@@ -283,5 +283,35 @@ def get_surgery():
 
     return surgeries
 
+@main.route('/get-surgery-types')
+def get_surgery_types():
+    cursor.execute("SELECT * FROM SurgeryType")
+    surgeryTypes = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    surgeryTypes = [dict(zip([column[0] for column in cursor.description], row)) for row in surgeryTypes]
+
+    return surgeryTypes
+
+@main.route('/get-surgeon')
+def get_surgeon():
+    cursor.execute("SELECT * FROM Surgeon")
+    surgeons = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    surgeons = [dict(zip([column[0] for column in cursor.description], row)) for row in surgeons]
+
+    return surgeons
+
+@main.route('/get-employees')
+def get_employees():
+    cursor.execute("SELECT * FROM Employee")
+    employees = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    employees = [dict(zip([column[0] for column in cursor.description], row)) for row in employees]
+
+    return employees
+
 if __name__ == "__main__":
     main.run(debug=True)

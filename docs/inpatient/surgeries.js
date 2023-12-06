@@ -1,12 +1,31 @@
 let SurgeryTables;
+let SurgeryTypes;
+let Patients;
+let Surgeons;
+let Employees;
 
-populateTable = function(data) {
+getName = function(ID, Table) {
+    if (Table === 'patient') {
+        return Patients.find(p => p.ID === ID).Name;
+    }
+    else if (Table === 'surgeon') {
+        return Employees.find(p => p.ID === ID).Name;
+    }
+    else if (Table ==='type') {
+        return SurgeryTypes.find(p => p.ID === ID).Name;
+    }
+    else {
+        console.log('Error: Table not found')
+    }
+}
+
+populateTable = function() {
     // Clear the table first
     databaseItems.querySelector('tbody').innerHTML = '';
 
     var count = 0;
 
-    for (var i = 0; i < data.length; i++) {
+    for (var i = 0; i < SurgeryTables.length; i++) {
         var row = document.createElement('tr');
         // Style the row based on whether its index is even or odd
         if (count  % 2 === 0) {
@@ -18,19 +37,20 @@ populateTable = function(data) {
         count++;
 
         var SurgeonCell = document.createElement('td');
-        SurgeonCell.textContent = data[i].SurgeonID;
+        SurgeonCell.textContent = getName(SurgeryTables[i].SurgeonID, 'surgeon');
 
         var PatientCell = document.createElement('td');
-        PatientCell.textContent = data[i].PatientID;
+        PatientCell.textContent = getName(SurgeryTables[i].PatientID, 'patient');
 
         var ORCell = document.createElement('td');
-        ORCell.textContent = data[i].OperationTheatreNumber;
+        ORCell.textContent = SurgeryTables[i].OperationTheatreNumber;
 
         var SurgeryTypeCell = document.createElement('td');
-        SurgeryTypeCell.textContent = data[i].SurgeryTypeID;
+        SurgeryTypeCell.textContent = getName(SurgeryTables[i].SurgeryTypeID, 'type');
 
         var DateCell = document.createElement('td');
-        DateCell.textContent = data[i].SurgeryDate;
+        DateCell.textContent = SurgeryTables[i].SurgeryDate;
+
 
         row.appendChild(SurgeonCell);
         row.appendChild(PatientCell);
@@ -45,5 +65,17 @@ window.onload = async function() {
     let response = await fetch('/get-surgery');
     SurgeryTables = await response.json();
 
-    populateTable(SurgeryTables)
+    response = await fetch('/get-surgery-types');
+    SurgeryTypes = await response.json();
+
+    response = await fetch('/get-surgeon');
+    Surgeons = await response.json();
+
+    response = await fetch('/get-patients');
+    Patients = await response.json();
+
+    response = await fetch('/get-employees');
+    Employees = await response.json();
+
+    populateTable()
 }
