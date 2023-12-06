@@ -273,5 +273,15 @@ def get_employee():
         # Handle the case where no employee is found
         return {"error": "Employee not found"}
 
+@main.route('/get-surgery')
+def get_surgery():
+    cursor.execute("SELECT * FROM Surgery")
+    surgeries = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    surgeries = [dict(zip([column[0] for column in cursor.description], row)) for row in surgeries]
+
+    return surgeries
+
 if __name__ == "__main__":
     main.run(debug=True)
