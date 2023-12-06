@@ -92,10 +92,11 @@ CREATE TABLE Surgeon (
 -- "bed numbers in a room are labeled A or B"
 CREATE TABLE ClinicBed (
     ID INT PRIMARY KEY,
-    NursingUnit INT CHECK (NursingUnit > 0 AND NursingUnit < 8) NOT NULL,
+    NursingUnit INT  NOT NULL,
     Wing ENUM('Blue', 'Green') NOT NULL,
     RoomNumber INT NOT NULL,
-    BedLetter ENUM('A', 'B') NOT NULL
+    BedLetter ENUM('A', 'B') NOT NULL,
+    CONSTRAINT NursingUnit_Check CHECK (NursingUnit > 0 AND NursingUnit < 8)
 );
 
 CREATE TABLE Allergy (
