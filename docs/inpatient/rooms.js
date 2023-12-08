@@ -278,6 +278,8 @@ window.onload = async function() {
         document.getElementById('nursingUnitEnd').value = '0';
         document.getElementById('rangeCheckbox').checked = false;
         document.getElementById('bed-assign').value = 'all';
+        nursingUnitEnd.disabled = true;
+        nursingUnitStartLabel.textContent = 'Nursing Unit:';
         populateTable(beds);
     });
 

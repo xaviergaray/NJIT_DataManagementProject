@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NMA - In-patient Management</title>
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+    <link rel="stylesheet" type="text/css" href="commonStyles.css">
+    <link rel="stylesheet" type="text/css" href="rooms.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="surgeries.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1><a href="/">Newark Medical Associates</a></h1>
+        <h2><a href="/inpatient/">In-patient Management</a></h2>
+        <nav2>
+            <h2><a href="/inpatient/patients">Patients</a></h2>
+            <h2><a href="/inpatient/surgeries">Surgeries</a></h2>
+            <h2><a href="/inpatient/rooms">Rooms</a></h2>
+        </nav2>
+
+        <div class="inpatient-management-container">
+            <div class="scrollBoxContainer">
+                <h3>Scheduled Surgeries</h3>
+
+                <div id="scrollBox">
+                    <table id="databaseItems">
+                        <thead>
+                            <tr-h>
+                                <th>Surgeon <button class="sort-btn" data-sort="ID"><i class="fas fa-sort"></i></button></th>
+                                <th>Patient <button class="sort-btn" data-sort="NursingUnit"><i class="fas fa-sort"></i></button></th>
+                                <th>Surgery <button class="sort-btn" data-sort="Wing"><i class="fas fa-sort"></i></button></th>
+                                <th>Operating Theater<button class="sort-btn" data-sort="RoomNumber"><i class="fas fa-sort"></i></button></th>
+                                <th>Date<button class="sort-btn" data-sort="BedLetter"><i class="fas fa-sort"></i></button></th>
+                                <th></th>
+                            </tr-h>
+                        </thead>
+                        <tbody>
+                            <!-- Rows from the database will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="filters-container">
+                <h3>Filters</h3>
+
+                <div class="filters">
+                    <div class="surgeon-filters">
+                        <label for="surgeon">Surgeon:</label>
+                        <select id="surgeon">
+                            <!-- Rows from the database will be inserted here -->
+                        </select>
+                    </div>
+
+                    <div class="patient-filters">
+                        <label for="patient">Patient:</label>
+                        <select id="patient">
+                            <!-- Rows from the database will be inserted here -->
+                        </select>
+                    </div>
+
+                    <div class="operating-theater-filters">
+                        <label for="operating-theater-list">Operating Theater:</label>
+                        <select id="operating-theater-list">
+                            <!-- Rows from the database will be inserted here -->
+                        </select>
+                    </div>
+
+                    <div class="date-filters">
+                        <label for="dateStart">Dates:</label>
+                        <input type="date" id="dateStart" disabled>
+
+                        <label for="dateEnd">Until:</label>
+                        <input type="date" id="dateEnd" disabled>
+                    </div>
+
+                    <div class="date-range-box">
+                        <label for="rangeCheckbox">Filter by dates?</label>
+                        <input type="checkbox" id="rangeCheckbox">
+                    </div>
+
+                    <div class="reset-filters">
+                        <button id="reset">Reset Filters</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

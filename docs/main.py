@@ -29,9 +29,9 @@ def inpatient_management():
 def inpatient_management_patients():
     return render_template('inpatient/Patients.html')
 
-@main.route('/inpatient/staff')
+@main.route('/inpatient/surgeries')
 def inpatient_management_staff():
-    return render_template('inpatient/Staff.html')
+    return render_template('inpatient/Surgeries.html')
 
 @main.route('/inpatient/rooms')
 def inpatient_management_rooms():
@@ -272,6 +272,56 @@ def get_employee():
     else:
         # Handle the case where no employee is found
         return {"error": "Employee not found"}
+
+@main.route('/get-surgery')
+def get_surgery():
+    cursor.execute("SELECT * FROM Surgery")
+    surgeries = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    surgeries = [dict(zip([column[0] for column in cursor.description], row)) for row in surgeries]
+
+    return surgeries
+
+@main.route('/get-surgery-types')
+def get_surgery_types():
+    cursor.execute("SELECT * FROM SurgeryType")
+    surgeryTypes = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    surgeryTypes = [dict(zip([column[0] for column in cursor.description], row)) for row in surgeryTypes]
+
+    return surgeryTypes
+
+@main.route('/get-surgeon')
+def get_surgeon():
+    cursor.execute("SELECT * FROM Surgeon")
+    surgeons = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    surgeons = [dict(zip([column[0] for column in cursor.description], row)) for row in surgeons]
+
+    return surgeons
+
+@main.route('/get-employees')
+def get_employees():
+    cursor.execute("SELECT * FROM Employee")
+    employees = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    employees = [dict(zip([column[0] for column in cursor.description], row)) for row in employees]
+
+    return employees
+
+@main.route('/get-support-staff')
+def get_support_staff():
+    cursor.execute("SELECT * FROM SupportStaff")
+    supportStaff = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    supportStaff = [dict(zip([column[0] for column in cursor.description], row)) for row in supportStaff]
+
+    return supportStaff
 
 if __name__ == "__main__":
     main.run(debug=True)
