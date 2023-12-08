@@ -118,6 +118,8 @@ def initializeNurses(nurses):
         if EIDs:
             assigned_EID = random.choice(EIDs)
             EIDs.remove(assigned_EID)
+            updateEmployeeRole(assigned_EID, 'Nurse')
+
             sql = "INSERT INTO Nurse (ID, SurgeryTypeID, Grade, YearsOfExperience) VALUES (%s, %s, %s, %s)"
             val = (assigned_EID,
                    None,
@@ -144,6 +146,8 @@ def initializePhysicians(physicians):
         if EIDs:
             assigned_EID = random.choice(EIDs)
             EIDs.remove(assigned_EID)
+            updateEmployeeRole(assigned_EID, 'Physician')
+
             sql = "INSERT INTO Physician (ID, Specialty, FieldType, PercentOwnership) VALUES (%s, %s, %s, %s)"
             val = (assigned_EID,
                    random.choice(['Internal Medicine', 'Pediatrics', 'Ophthalmology', 'Family Medicine', 'Orthopedics']),
@@ -170,6 +174,8 @@ def initializeSurgeons(surgeons):
         if EIDs:
             assigned_EID = random.choice(EIDs)
             EIDs.remove(assigned_EID)
+            updateEmployeeRole(assigned_EID, 'Surgeon')
+
             sql = "INSERT INTO Surgeon (ID, ContractType, ContractDuration, ContractAmount) VALUES (%s, %s, %s, %s)"
             val = (assigned_EID,
                    None,
@@ -376,6 +382,41 @@ def initializeRelationships(rel1, rel2, n):
     # Commit the transaction
     db.commit()
 
+def initializeSupportStaff(supportStaff):
+    overrideTable('SupportStaff')
+
+    # Create a list of employee IDs without roles
+    cursor.execute("SELECT ID FROM Employee WHERE Role IS NULL")
+    EIDs = [row[0] for row in cursor.fetchall()]
+
+    # Randomly assign available EIDs to support staff
+    for staff in range(1, supportStaff + 1):
+        if EIDs:
+            assigned_EID = random.choice(EIDs)
+            EIDs.remove(assigned_EID)
+            updateEmployeeRole(assigned_EID, 'Support Staff')
+
+            sql = "INSERT INTO SupportStaff (ID, EmpType) VALUES (%s, %s)"
+            val = (assigned_EID,
+                   f"Employee Type {staff}"
+                   )
+            cursor.execute(sql, val)
+        else:
+            print("Could not add all requested support staff. Require more employees first.")
+
+    print(f'{supportStaff} support staff added successfully!')
+    # Commit the transaction
+    db.commit()
+
+def updateEmployeeRole(EID, Role):
+    update_sql = "UPDATE Employee SET Role = NULL WHERE Role = %s"
+    update_val = (Role,)
+    cursor.execute(update_sql, update_val)
+
+    update_role_sql = "UPDATE Employee SET Role = %s WHERE ID = %s"
+    update_role_val = (Role, EID)
+    cursor.execute(update_role_sql, update_role_val)
+
 def defaultRows():
     print('Creating tables, please do not interrupt the process.')
     initializeBedsTable(700)
@@ -391,6 +432,7 @@ def defaultRows():
     initializeSurgeryTypes(10)
     initializeSurgeryTypeSkills(10)
     initializeSurgeries(15)
+    initializeSupportStaff(20)
 
 if __name__ == "__main__":
     # Parse command-line arguments
@@ -407,6 +449,7 @@ if __name__ == "__main__":
     parser.add_argument('-surgerytypes', type=int, help='the number of surgery types to insert')
     parser.add_argument('-surgerytypeskills', type=int, help='the number of surgery type skills to insert')
     parser.add_argument('-surgeries', type=int, help='the number of surgeries to insert')
+    parser.add_argument('-supportstaff', type=int, help='the number of support staff to insert')
     parser.add_argument('-default', action='store_true', help='initialize as many rows in the database as this script allows')
     args = parser.parse_args()
 
@@ -440,3 +483,5 @@ if __name__ == "__main__":
         initializeSurgeryTypeSkills(args.surgerytypeskills)
     if args.surgeries is not None:
         initializeSurgeries(args.surgeries)
+    if args.supportstaff is not None:
+        initializeSupportStaff(args.supportstaff)

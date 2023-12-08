@@ -313,5 +313,15 @@ def get_employees():
 
     return employees
 
+@main.route('/get-support-staff')
+def get_support_staff():
+    cursor.execute("SELECT * FROM SupportStaff")
+    supportStaff = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    supportStaff = [dict(zip([column[0] for column in cursor.description], row)) for row in supportStaff]
+
+    return supportStaff
+
 if __name__ == "__main__":
     main.run(debug=True)
