@@ -3,6 +3,7 @@ let SurgeryTypes;
 let Patients;
 let Surgeon;
 let Employees;
+let Loaded = 0;
 
 getName = function(ID, Table) {
     var name;
@@ -436,113 +437,131 @@ window.onload = async function() {
 
     populateTable()
 
-    let addButton = document.getElementById('add-surgery-btn');
-    addButton.addEventListener('click', function() {
-        // Create a modal backdrop
-        var backdrop = document.createElement('div');
-        backdrop.style.position = 'fixed';
-        backdrop.style.top = '0';
-        backdrop.style.left = '0';
-        backdrop.style.width = '100%';
-        backdrop.style.height = '100%';
-        backdrop.style.backgroundColor = 'rgba(0,0,0,0.5)';
-        document.body.appendChild(backdrop);
+    if (Loaded === 0) {
+        let addButton = document.getElementById('add-surgery-btn');
+            addButton.addEventListener('click', function() {
+                // Create a modal backdrop
+                var backdrop = document.createElement('div');
+                backdrop.style.position = 'fixed';
+                backdrop.style.top = '0';
+                backdrop.style.left = '0';
+                backdrop.style.width = '100%';
+                backdrop.style.height = '100%';
+                backdrop.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                document.body.appendChild(backdrop);
 
-        // Create a modal dialog
-        var dialog = document.createElement('div');
-        dialog.style.position = 'fixed';
-        dialog.style.top = '50%';
-        dialog.style.left = '50%';
-        dialog.style.transform = 'translate(-50%, -50%)';
-        dialog.style.backgroundColor = 'white';
-        dialog.style.padding = '1em';
-        backdrop.appendChild(dialog);
+                // Create a modal dialog
+                var dialog = document.createElement('div');
+                dialog.style.position = 'fixed';
+                dialog.style.top = '50%';
+                dialog.style.left = '50%';
+                dialog.style.transform = 'translate(-50%, -50%)';
+                dialog.style.backgroundColor = 'white';
+                dialog.style.padding = '1em';
+                backdrop.appendChild(dialog);
 
-        // Add the components
-        var components = ['Surgeon', 'Patient', 'Surgery', 'Operating Theater', 'Year', 'Month', 'Day', 'Time'];
-        var firstLine = document.createElement('div');
-        var secondLine = document.createElement('div');
-        var thirdLine = document.createElement('div');
-        var fourthLine = document.createElement('div');
-        dialog.appendChild(firstLine);
-        dialog.appendChild(secondLine);
-        dialog.appendChild(thirdLine);
-        dialog.appendChild(fourthLine);
+                // Add the components
+                var components = ['Surgeon', 'Patient', 'Surgery', 'Operating Theater', 'Date', 'Time'];
+                var firstLine = document.createElement('div');
+                var secondLine = document.createElement('div');
+                var thirdLine = document.createElement('div');
+                var fourthLine = document.createElement('div');
+                dialog.appendChild(firstLine);
+                dialog.appendChild(secondLine);
+                dialog.appendChild(thirdLine);
+                dialog.appendChild(fourthLine);
 
-        components.forEach(function(component) {
-            var label = document.createElement('label');
-            label.textContent = component;
+                components.forEach(function(component) {
+                    var label = document.createElement('label');
+                    label.textContent = component;
 
-            var input;
-            if (component === 'Operating Theater' || component === 'Year' || component === 'Month' || component === 'Day' || component === 'Time') {
-                input = document.createElement('input');
-                input.name = component; // Add a name attribute to each input
-            } else {
-                input = document.createElement('select');
-                input.name = component; // Add a name attribute to each select
-                input.id = component;
-            }
+                    var input;
+                    if (component === 'Operating Theater') {
+                        input = document.createElement('input');
+                    } else if (component === 'Time') {
+                        input = document.createElement('input');
+                        input.type = 'time';
+                    }else if (component === 'Date') {
+                        input = document.createElement('input');
+                        input.type = 'date';
+                    } else {
+                        input = document.createElement('select');
+                        input.id = component;
+                    }
 
-            if (component === 'Year' || component === 'Month' || component === 'Day') {
-                secondLine.appendChild(label);
-                secondLine.appendChild(input);
-            } else if (component === 'Time') {
-                thirdLine.appendChild(label);
-                thirdLine.appendChild(input);
-            } else {
-                firstLine.appendChild(label);
-                firstLine.appendChild(input);
-                if (component !== 'Operating Theater') {
-                    populateDropdownInAssign(component);
-                }
-            }
-        });
+                    input.name = component;
 
-        // Add the submit button
-        var submitButton = document.createElement('button');
-        submitButton.textContent = 'Submit';
-        submitButton.addEventListener('click', function() {
-            // Gather the values from the inputs
-            var SurgeryTypeID = document.querySelector('select[name="Surgeon"]').value;
-            var SurgeonID = document.querySelector('select[name="Patient"]').value;
-            var PatientID = document.querySelector('select[name="Surgery"]').value;
-            var SurgeryDate = document.querySelector('input[name="Year"]').value + '-' + document.querySelector('input[name="Month"]').value + '-' + document.querySelector('input[name="Day"]').value + ' ' + document.querySelector('input[name="Time"]').value;
-            var selectedMember = document.querySelector('input[name="Operating Theater"]').value;
+                    if (component === 'Date') {
+                        secondLine.appendChild(label);
+                        secondLine.appendChild(input);
+                    } else if (component === 'Time') {
+                        thirdLine.appendChild(label);
+                        thirdLine.appendChild(input);
+                    } else {
+                        firstLine.appendChild(label);
+                        firstLine.appendChild(input);
+                        if (component !== 'Operating Theater') {
+                            populateDropdownInAssign(component);
+                        }
+                    }
+                });
 
-            // Close the dialog box
-            dialog.close();
+                // Add the close button
+                var closeButton = document.createElement('button');
+                closeButton.textContent = 'Close';
+                closeButton.addEventListener('click', function() {
+                    document.body.removeChild(backdrop);
+                });
 
-            // Send the reassignment request
-            fetch('/edit-surgery', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    SurgeryTypeID: SurgeryTypeID,
-                    SurgeonID: SurgeonID,
-                    PatientID: PatientID,
-                    SurgeryDate: SurgeryDate,
-                    EditType: 'assign',
-                    NewOR: selectedMember,
-                })
-            })
-            .then(response => response.text())
-            .then(data => {
-                alert(`Patient ${getName(PatientID, 'patient')}'s surgery with ${getName(SurgeonID, 'surgeon')} was booked on ${SurgeryDate}!`);
-                window.onload();
+                // Add the submit button
+                var submitButton = document.createElement('button');
+                submitButton.textContent = 'Submit';
+                submitButton.addEventListener('click', function() {
+                    // Gather the values from the inputs
+                    var PatientID = Number(document.querySelector('select[name="Patient"]').value);
+                    var SurgeonID = Number(document.querySelector('select[name="Surgeon"]').value);
+                    var SurgeryTypeID = Number(document.querySelector('select[name="Surgery"]').value);
+                    var SurgeryDate = document.querySelector('input[name="Date"]').value;
+                    var SurgeryTime = document.querySelector('input[name="Time"]').value;
+                    var selectedOR = document.querySelector('input[name="Operating Theater"]').value;
+
+                    // Combine the date and time into a single datetime string
+                    var SurgeryDateTime = SurgeryDate + 'T' + SurgeryTime;
+
+                    console.log(PatientID);
+                    console.log(SurgeonID);
+                    console.log(SurgeryTypeID);
+                    console.log(SurgeryDateTime);
+                    console.log(selectedOR);
+
+                    // Send the assignment request
+                    fetch('/edit-surgery', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({
+                            SurgeryTypeID: SurgeryTypeID,
+                            SurgeonID: SurgeonID,
+                            PatientID: PatientID,
+                            SurgeryDate: SurgeryDateTime,
+                            EditType: 'assign',
+                            NewOR: selectedOR,
+                        })
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        alert(`Patient ${getName(PatientID, 'patient')}'s surgery with ${getName(SurgeonID, 'surgeon')} was booked on ${SurgeryDate}!`);
+                        window.onload();
+                        var clickEvent = new Event('click');
+                        closeButton.dispatchEvent(clickEvent);
+                    });
+                });
+                fourthLine.appendChild(submitButton);
+                fourthLine.appendChild(closeButton);
             });
-        });
-        fourthLine.appendChild(submitButton);
+    }
 
-        // Add the close button
-        var closeButton = document.createElement('button');
-        closeButton.textContent = 'Close';
-        closeButton.addEventListener('click', function() {
-            document.body.removeChild(backdrop);
-        });
-        fourthLine.appendChild(closeButton);
-    });
 
     var surgeonFilter = document.getElementById('surgeon');
     var patientFilter = document.getElementById('patient');
@@ -652,4 +671,6 @@ window.onload = async function() {
             populateTable();
         });
     });
+
+    Loaded = Loaded + 1;
 }
