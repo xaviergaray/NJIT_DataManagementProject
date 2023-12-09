@@ -198,4 +198,60 @@ window.onload = async function() {
         dateEnd.disabled = true;
         populateTable();
     });
+
+    // Add event listeners to the sort buttons
+    var sortButtons = document.querySelectorAll('.sort-btn');
+    sortButtons.forEach(function(btn) {
+        btn.ascending = true;  // Variable to toggle the sort order
+
+        btn.addEventListener('click', function() {
+            var sortField = this.dataset.sort;
+
+            // If this is the first click, set ascending to true
+            if (btn.ascending === true) {
+                btn.ascending = false;
+            } else {
+                btn.ascending = true;
+            }
+
+            // TODO: Sort the data
+            if (sortField === 'Surgeon') {
+                SurgeryTables.sort((a, b) => btn.ascending ? getName(a.SurgeonID, 'surgeon').localeCompare(getName(b.SurgeonID, 'surgeon')) : getName(b.SurgeonID, 'surgeon').localeCompare(getName(a.SurgeonID, 'surgeon')));
+            } else if (sortField === 'Patient') {
+                SurgeryTables.sort((a, b) => btn.ascending ? getName(a.PatientID, 'patient').localeCompare(getName(b.PatientID, 'patient')) : getName(b.PatientID, 'patient').localeCompare(getName(a.PatientID, 'patient')));
+            } else if (sortField === 'Surgery') {
+                SurgeryTables.sort((a, b) => btn.ascending ? getName(a.SurgeryTypeID, 'type').localeCompare(getName(b.SurgeryTypeID, 'type')) : getName(b.SurgeryTypeID, 'type').localeCompare(getName(a.SurgeryTypeID, 'type')));
+            } else if (sortField === 'OR') {
+                SurgeryTables.sort((a, b) => btn.ascending ? a.OperationTheatreNumber.localeCompare(b.OperationTheatreNumber) : b.OperationTheatreNumber.localeCompare(a.OperationTheatreNumber));
+            } else if (sortField === 'Date') {
+                SurgeryTables.sort((a, b) => {
+                    // Parse the dates using Date.parse()
+                    var dateA = Date.parse(a.SurgeryDate);
+                    var dateB = Date.parse(b.SurgeryDate);
+
+                    // Compare the timestamps
+                    return btn.ascending ? dateA - dateB : dateB - dateA;
+                });
+            }
+
+            // Change the icon
+            var icon = this.querySelector('i');
+            if (btn.ascending) {
+                icon.className = 'fas fa-sort-up';
+            } else {
+                icon.className = 'fas fa-sort-down';
+            }
+
+            // Reset the icons and sort order of the other columns
+            var otherButtons = document.querySelectorAll('.sort-btn:not([data-sort="' + sortField + '"])');
+            otherButtons.forEach(function(otherBtn) {
+                var otherIcon = otherBtn.querySelector('i');
+                otherIcon.className = 'fas fa-sort';
+                otherBtn.ascending = true;  // Reset the sort order
+            });
+
+            // Repopulate the table with the sorted data
+            populateTable();
+        });
+    });
 }
