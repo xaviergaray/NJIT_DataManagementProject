@@ -21,6 +21,18 @@ def index():
 def patient_management():
     return render_template('patient/PatientManagement.html')
 
+@main.route('/patient/appointments')
+def patient_management_appointments():
+    return render_template('patient/Appointments.html')
+
+@main.route('/patient/newpatient')
+def patient_management_newpatient():
+    return render_template('patient/NewPatient.html')
+
+@main.route('/patient/viewpatients')
+def patient_management_viewpatients():
+    return render_template('patient/ViewPatients.html')
+
 @main.route('/inpatient/')
 def inpatient_management():
     return render_template('inpatient/InpatientManagement.html')

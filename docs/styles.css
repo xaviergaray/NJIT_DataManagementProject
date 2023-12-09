@@ -58,3 +58,8 @@ input, button {
     padding: 10px;
     margin: 10px;
 }
+
+nav2 {
+    display: flex;
+    gap: 5em;
+}
