@@ -43,9 +43,6 @@ populateTable = function() {
             (selectedOR === '' || SurgeryTables[i].OperationTheatreNumber == selectedOR) &&
             (!rangeCheckbox || (surgeryDate >= dateStart && (dateEnd ? surgeryDate <= dateEnd : true))))
         {
-            console.log(surgeryDate);
-            console.log(dateStart);
-            console.log(dateEnd);
             var row = document.createElement('tr');
             // Style the row based on whether its index is even or odd
             if (count  % 2 === 0) {
@@ -68,14 +65,8 @@ populateTable = function() {
             var SurgeryTypeCell = document.createElement('td');
             SurgeryTypeCell.textContent = getName(SurgeryTables[i].SurgeryTypeID, 'type');
 
-            var formattedDate = surgeryDate.toLocaleString('en-US', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-              hour: 'numeric',
-              minute: 'numeric',
-              second: 'numeric'
-            });
+            var formattedDate = surgeryDate.toGMTString();
+            
             var DateCell = document.createElement('td');
             DateCell.textContent = formattedDate;
 
@@ -85,6 +76,86 @@ populateTable = function() {
             row.appendChild(ORCell);
             row.appendChild(DateCell);
             databaseItems.querySelector('tbody').appendChild(row);
+
+            // Ellipsis button
+            var ellipsisCell = document.createElement('td');
+            var ellipsisButton = document.createElement('button');
+            ellipsisButton.textContent = '...';
+            ellipsisButton.style.backgroundColor = '#007BFF';
+            ellipsisButton.style.color = 'white';
+            ellipsisButton.style.border = 'none';
+            ellipsisButton.style.padding = '5px 10px';
+            ellipsisButton.style.borderRadius = '5px';
+            ellipsisButton.style.cursor = 'pointer';
+            ellipsisCell.appendChild(ellipsisButton);
+            row.appendChild(ellipsisCell);
+            ellipsisButton.addEventListener('click', (function(i, SurgeryTables) {
+                return function() {
+                    // Create a modal backdrop
+                    var backdrop = document.createElement('div');
+                    backdrop.style.position = 'fixed';
+                    backdrop.style.top = '0';
+                    backdrop.style.left = '0';
+                    backdrop.style.width = '100%';
+                    backdrop.style.height = '100%';
+                    backdrop.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                    backdrop.style.zIndex = '1000';
+
+                    // Create a dialogue box
+                    var dialogBox = document.createElement('div');
+                    dialogBox.style.position = 'fixed';
+                    dialogBox.style.top = '50%';
+                    dialogBox.style.left = '50%';
+                    dialogBox.style.transform = 'translate(-50%, -50%)';
+                    dialogBox.style.backgroundColor = 'white';
+                    dialogBox.style.border = '1px solid black';
+                    dialogBox.style.padding = '10px';
+                    dialogBox.style.zIndex = '1001';
+
+                    // Create a labels
+                    var label = document.createElement('p');
+                    label.textContent = 'Patient: ' + getName(SurgeryTables[i].PatientID, 'patient');
+                    dialogBox.appendChild(label);
+                    label = document.createElement('p');
+                    label.textContent = 'Surgery: ' + getName(SurgeryTables[i].SurgeryTypeID, 'type');
+                    dialogBox.appendChild(label);
+                    label = document.createElement('p');
+                    label.textContent = 'Date: ' + SurgeryTables[i].SurgeryDate;
+                    dialogBox.appendChild(label);
+
+                    // Create "remove", "reschedule", and "reassign" buttons
+                    var removeButton = document.createElement('button');
+                    removeButton.textContent = 'Remove';
+                    var rescheduleButton = document.createElement('button');
+                    rescheduleButton.textContent = 'Reschedule';
+                    var reassignButton = document.createElement('button');
+                    reassignButton.textContent = 'Reassign';
+
+                    // Add the buttons to the dialogue box
+                    dialogBox.appendChild(removeButton);
+                    dialogBox.appendChild(rescheduleButton);
+                    dialogBox.appendChild(reassignButton);
+
+                    // Create a close button
+                    var closeButton = document.createElement('button');
+                    closeButton.textContent = 'X';
+                    closeButton.style.position = 'absolute';
+                    closeButton.style.top = '0';
+                    closeButton.style.right = '0';
+                    closeButton.addEventListener('click', function() {
+                        // Remove the dialogue box and the backdrop when the close button is clicked
+                        document.body.removeChild(dialogBox);
+                        document.body.removeChild(backdrop);
+                    });
+
+                    // Add the close button to the dialogue box
+                    dialogBox.appendChild(closeButton);
+
+                    // Add the dialogue box and the backdrop to the body of the document
+                    document.body.appendChild(backdrop);
+                    document.body.appendChild(dialogBox);
+                };
+            })(i, SurgeryTables));
         }
     }
 }
@@ -214,7 +285,7 @@ window.onload = async function() {
                 btn.ascending = true;
             }
 
-            // TODO: Sort the data
+            // Sort the data
             if (sortField === 'Surgeon') {
                 SurgeryTables.sort((a, b) => btn.ascending ? getName(a.SurgeonID, 'surgeon').localeCompare(getName(b.SurgeonID, 'surgeon')) : getName(b.SurgeonID, 'surgeon').localeCompare(getName(a.SurgeonID, 'surgeon')));
             } else if (sortField === 'Patient') {
