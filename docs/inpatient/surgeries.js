@@ -146,7 +146,9 @@ populateTable = function() {
                                     .then(response => response.text())
                                     .then(data => {
                                         alert(`Patient ${getName(PatientID, 'patient')}'s surgery on ${SurgeryDate} was removed!`);
-                                        populateTable();
+                                        var clickEvent = new Event('click');
+                                        closeButton.dispatchEvent(clickEvent);
+                                        window.onload();
                                 })
                             }
                         })(SurgeryTables[i].SurgeryTypeID, SurgeryTables[i].SurgeonID, SurgeryTables[i].PatientID, SurgeryTables[i].SurgeryDate));
@@ -215,7 +217,7 @@ populateTable = function() {
                                     .then(response => response.text())
                                     .then(data => {
                                         alert(`Patient ${getName(PatientID, 'patient')}'s surgery was rescheduled to ${enteredDate}!`);
-                                        populateTable();
+                                        window.onload();
                                 })
                             }
                         })(SurgeryTables[i].SurgeryTypeID, SurgeryTables[i].SurgeonID, SurgeryTables[i].PatientID, SurgeryTables[i].SurgeryDate));
@@ -282,7 +284,7 @@ populateTable = function() {
                                     .then(response => response.text())
                                     .then(data => {
                                         alert(`Patient ${getName(PatientID, 'patient')}'s surgery with ${getName(SurgeonID, 'surgeon')} was reassigned to ${getName(selectedMember, 'surgeon')}!`);
-                                        populateTable();
+                                        window.onload();
                                     });
                                 });
                                 dialogBox.appendChild(submitButton);
