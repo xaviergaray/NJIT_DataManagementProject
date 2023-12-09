@@ -19,3 +19,6 @@ Term project for CS 631 851 at NJIT. Supplementary information can be found [her
    * "python NJIT_DataManagementProject\scripts\initializeRows.py -default" (*Here you can add -h to see specific configuration options*)
    * "python NJIT_DataManagementProject\docs\main.py"
 5. On your browser, go to http://127.0.0.1:5000
+
+## Troubleshooting
+* If the program does not run due to commands not being recognized, this could be an issue with using an outdated Python version. Otherwise, adjust the commands themselves to be compatible with your SQL server.
