@@ -343,7 +343,8 @@ def edit_surgery():
     elif EditType == 'reschedule':
         query = f"UPDATE Surgery SET SurgeryDate='{SurgeryDate}' WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
     elif EditType == 'reassign':
-        query = f"UPDATE Surgery SET SurgeonID='{SurgeonID}' WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
+        NewSurgeonID = request.form.get('NewSurgeonID')
+        query = f"UPDATE Surgery SET SurgeonID={NewSurgeonID} WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
 
     cursor.execute(query)
 

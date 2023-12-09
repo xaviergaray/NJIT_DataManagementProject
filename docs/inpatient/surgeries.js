@@ -4,18 +4,21 @@ let Patients;
 let Employees;
 
 getName = function(ID, Table) {
+    var name;
     if (Table === 'patient') {
-        return Patients.find(p => p.ID === ID).Name;
+        name = Patients.find(p => p.ID === ID).Name;
     }
     else if (Table === 'surgeon') {
-        return Employees.find(p => p.ID === ID).Name;
+        name = Employees.find(p => p.ID === ID).Name;
     }
     else if (Table ==='type') {
-        return SurgeryTypes.find(p => p.ID === ID).Name;
+        name = SurgeryTypes.find(p => p.ID === ID).Name;
     }
     else {
-        console.log('Error: Table not found')
+        console.log('Error: Table not found');
     }
+
+    return name;
 }
 
 populateTable = function() {
@@ -35,7 +38,7 @@ populateTable = function() {
 
     for (var i = 0; i < SurgeryTables.length; i++) {
         var surgeryDate = new Date(SurgeryTables[i].SurgeryDate);
-        
+
         // Check if the surgery matches the selected filters
         if ((selectedSurgeon === '' || SurgeryTables[i].SurgeonID == selectedSurgeon) &&
             (selectedPatient === '' || SurgeryTables[i].PatientID == selectedPatient) &&
@@ -142,7 +145,7 @@ populateTable = function() {
                                 })
                                     .then(response => response.text())
                                     .then(data => {
-                                        alert(`Patient ${PatientID}'s surgery on ${SurgeryDate} was removed!`);
+                                        alert(`Patient ${getName(PatientID, 'patient')}'s surgery on ${SurgeryDate} was removed!`);
                                         populateTable();
                                 })
                             }
@@ -211,13 +214,96 @@ populateTable = function() {
                                 })
                                     .then(response => response.text())
                                     .then(data => {
-                                        alert(`Patient ${PatientID}'s surgery was rescheduled to ${enteredDate}!`);
+                                        alert(`Patient ${getName(PatientID, 'patient')}'s surgery was rescheduled to ${enteredDate}!`);
                                         populateTable();
                                 })
                             }
                         })(SurgeryTables[i].SurgeryTypeID, SurgeryTables[i].SurgeonID, SurgeryTables[i].PatientID, SurgeryTables[i].SurgeryDate));
                     var reassignButton = document.createElement('button');
                     reassignButton.textContent = 'Reassign';
+                    reassignButton.addEventListener('click', (function(SurgeryTables, SurgeryTypeID, SurgeonID, PatientID, SurgeryDate) {
+                            return function() {
+                                let dropdown = document.createElement('select');
+
+                                // Create a Set to store unique SurgeonIDs
+                                let uniqueSurgeonIDs = new Set();
+
+                                // Add each SurgeonID to the Set
+                                SurgeryTables.forEach(surgeon => uniqueSurgeonIDs.add(surgeon.SurgeonID));
+
+                                // Convert the Set to an Array
+                                let surgeonArray = Array.from(uniqueSurgeonIDs);
+
+                                // Sort the Array alphabetically based on the surgeon's name
+                                surgeonArray.sort((a, b) => {
+                                    let nameA = getName(a, 'surgeon');
+                                    let nameB = getName(b, 'surgeon');
+
+                                    if (nameA < nameB) return -1;
+                                    if (nameA > nameB) return 1;
+                                    return 0;
+                                });
+
+                                // Create a dropdown list with the sorted SurgeonIDs
+                                surgeonArray.forEach(surgeonID => {
+                                    let option = document.createElement('option');
+                                    option.value = surgeonID;
+                                    option.text = getName(surgeonID, 'surgeon');
+                                    dropdown.add(option);
+                                });
+
+                                // Create a dialog box
+                                let dialogBox = document.createElement('dialog');
+                                dialogBox.appendChild(dropdown);
+
+                                // Add a button to submit the selected member
+                                let submitButton = document.createElement('button');
+                                submitButton.textContent = 'Submit';
+                                submitButton.addEventListener('click', function() {
+                                    let selectedMember = parseInt(dropdown.options[dropdown.selectedIndex].value);
+                                    // Close the dialog box
+                                    dialogBox.close();
+
+                                    // Send the reassignment request
+                                    fetch('/edit-surgery', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        body: new URLSearchParams({
+                                            SurgeryTypeID: SurgeryTypeID,
+                                            SurgeonID: SurgeonID,
+                                            PatientID: PatientID,
+                                            SurgeryDate: SurgeryDate,
+                                            EditType: 'reassign',
+                                            NewSurgeonID: selectedMember,
+                                        })
+                                    })
+                                    .then(response => response.text())
+                                    .then(data => {
+                                        alert(`Patient ${getName(PatientID, 'patient')}'s surgery with ${getName(SurgeonID, 'surgeon')} was reassigned to ${getName(selectedMember, 'surgeon')}!`);
+                                        populateTable();
+                                    });
+                                });
+                                dialogBox.appendChild(submitButton);
+
+                                // Create a close button
+                                var closeButton = document.createElement('button');
+                                closeButton.textContent = 'X';
+                                closeButton.style.position = 'relative';
+                                closeButton.style.top = '0';
+                                closeButton.style.right = '0';
+                                closeButton.addEventListener('click', function() {
+                                    // Remove the dialogue box and the backdrop when the close button is clicked
+                                    document.body.removeChild(dialogBox);
+                                });
+                                dialogBox.appendChild(closeButton)
+
+                                // Show the dialog box
+                                document.body.appendChild(dialogBox);
+                                dialogBox.showModal();
+                            }
+                        })(SurgeryTables, SurgeryTables[i].SurgeryTypeID, SurgeryTables[i].SurgeonID, SurgeryTables[i].PatientID, SurgeryTables[i].SurgeryDate));
 
                     // Add the buttons to the dialogue box
                     dialogBox.appendChild(removeButton);
