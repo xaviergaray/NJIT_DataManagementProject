@@ -345,6 +345,9 @@ def edit_surgery():
     elif EditType == 'reassign':
         NewSurgeonID = request.form.get('NewSurgeonID')
         query = f"UPDATE Surgery SET SurgeonID={NewSurgeonID} WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
+    elif EditType == 'assign':
+        NewOR = request.form.get('NewOR')
+        query = f"INSERT INTO Surgery (SurgeryTypeID, SurgeonID, PatientID, OperationTheatreNumber, SurgeryDate) VALUES ({SurgeryTypeID}, {SurgeonID}, {PatientID}, '{NewOR}', '{SurgeryDate}');"
 
     cursor.execute(query)
 

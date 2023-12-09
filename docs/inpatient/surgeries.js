@@ -1,6 +1,7 @@
 let SurgeryTables;
 let SurgeryTypes;
 let Patients;
+let Surgeon;
 let Employees;
 
 getName = function(ID, Table) {
@@ -355,8 +356,6 @@ function populateDropdown(dropdownId, data) {
     defaultOption.textContent = '';
     dropdown.appendChild(defaultOption);
 
-
-
     // Create an option element for each item in the data array
     if (dropdownId === 'operating-theater-list') {
         data.forEach(item => {
@@ -381,6 +380,40 @@ function populateDropdown(dropdownId, data) {
     }
 }
 
+function populateDropdownInAssign(component) {
+    // Get the dropdown element
+    var dropdown = document.getElementById(component);
+
+    // Clear the dropdown
+    dropdown.innerHTML = '';
+
+    var defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '';
+    dropdown.appendChild(defaultOption);
+
+    // Create a map
+    var componentMap = {
+        'Surgery': SurgeryTypes,
+        'Patient': Patients,
+        'Surgeon': Surgeon
+    };
+
+    var array = componentMap[component];
+
+    // Create an option for each patient
+    array.forEach(function(item) {
+        var option = document.createElement('option');
+        option.value = item.ID;
+        if (component === 'Surgeon') {
+            option.textContent = getName(item.ID, 'surgeon');
+        } else {
+            option.textContent = item.Name;
+        }
+        dropdown.appendChild(option);
+    });
+}
+
 window.onload = async function() {
     let response = await fetch('/get-surgery');
     SurgeryTables = await response.json();
@@ -391,6 +424,9 @@ window.onload = async function() {
     response = await fetch('/get-patients');
     Patients = await response.json();
 
+    response = await fetch('/get-surgeon');
+    Surgeon = await response.json();
+
     response = await fetch('/get-employees');
     Employees = await response.json();
 
@@ -399,6 +435,114 @@ window.onload = async function() {
     await populateDropdown('operating-theater-list', SurgeryTables)
 
     populateTable()
+
+    let addButton = document.getElementById('add-surgery-btn');
+    addButton.addEventListener('click', function() {
+        // Create a modal backdrop
+        var backdrop = document.createElement('div');
+        backdrop.style.position = 'fixed';
+        backdrop.style.top = '0';
+        backdrop.style.left = '0';
+        backdrop.style.width = '100%';
+        backdrop.style.height = '100%';
+        backdrop.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        document.body.appendChild(backdrop);
+
+        // Create a modal dialog
+        var dialog = document.createElement('div');
+        dialog.style.position = 'fixed';
+        dialog.style.top = '50%';
+        dialog.style.left = '50%';
+        dialog.style.transform = 'translate(-50%, -50%)';
+        dialog.style.backgroundColor = 'white';
+        dialog.style.padding = '1em';
+        backdrop.appendChild(dialog);
+
+        // Add the components
+        var components = ['Surgeon', 'Patient', 'Surgery', 'Operating Theater', 'Year', 'Month', 'Day', 'Time'];
+        var firstLine = document.createElement('div');
+        var secondLine = document.createElement('div');
+        var thirdLine = document.createElement('div');
+        var fourthLine = document.createElement('div');
+        dialog.appendChild(firstLine);
+        dialog.appendChild(secondLine);
+        dialog.appendChild(thirdLine);
+        dialog.appendChild(fourthLine);
+
+        components.forEach(function(component) {
+            var label = document.createElement('label');
+            label.textContent = component;
+
+            var input;
+            if (component === 'Operating Theater' || component === 'Year' || component === 'Month' || component === 'Day' || component === 'Time') {
+                input = document.createElement('input');
+                input.name = component; // Add a name attribute to each input
+            } else {
+                input = document.createElement('select');
+                input.name = component; // Add a name attribute to each select
+                input.id = component;
+            }
+
+            if (component === 'Year' || component === 'Month' || component === 'Day') {
+                secondLine.appendChild(label);
+                secondLine.appendChild(input);
+            } else if (component === 'Time') {
+                thirdLine.appendChild(label);
+                thirdLine.appendChild(input);
+            } else {
+                firstLine.appendChild(label);
+                firstLine.appendChild(input);
+                if (component !== 'Operating Theater') {
+                    populateDropdownInAssign(component);
+                }
+            }
+        });
+
+        // Add the submit button
+        var submitButton = document.createElement('button');
+        submitButton.textContent = 'Submit';
+        submitButton.addEventListener('click', function() {
+            // Gather the values from the inputs
+            var SurgeryTypeID = document.querySelector('select[name="Surgeon"]').value;
+            var SurgeonID = document.querySelector('select[name="Patient"]').value;
+            var PatientID = document.querySelector('select[name="Surgery"]').value;
+            var SurgeryDate = document.querySelector('input[name="Year"]').value + '-' + document.querySelector('input[name="Month"]').value + '-' + document.querySelector('input[name="Day"]').value + ' ' + document.querySelector('input[name="Time"]').value;
+            var selectedMember = document.querySelector('input[name="Operating Theater"]').value;
+
+            // Close the dialog box
+            dialog.close();
+
+            // Send the reassignment request
+            fetch('/edit-surgery', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    SurgeryTypeID: SurgeryTypeID,
+                    SurgeonID: SurgeonID,
+                    PatientID: PatientID,
+                    SurgeryDate: SurgeryDate,
+                    EditType: 'assign',
+                    NewOR: selectedMember,
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(`Patient ${getName(PatientID, 'patient')}'s surgery with ${getName(SurgeonID, 'surgeon')} was booked on ${SurgeryDate}!`);
+                window.onload();
+            });
+        });
+        fourthLine.appendChild(submitButton);
+
+        // Add the close button
+        var closeButton = document.createElement('button');
+        closeButton.textContent = 'Close';
+        closeButton.addEventListener('click', function() {
+            document.body.removeChild(backdrop);
+        });
+        fourthLine.appendChild(closeButton);
+    });
 
     var surgeonFilter = document.getElementById('surgeon');
     var patientFilter = document.getElementById('patient');
