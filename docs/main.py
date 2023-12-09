@@ -339,11 +339,11 @@ def edit_surgery():
     EditType = request.form.get('EditType')
 
     if EditType == 'remove':
-        query = f"DELETE FROM Surgery WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
+        query = f"DELETE FROM Surgery WHERE SurgeryTypeID='{SurgeryTypeID}' AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
     elif EditType == 'reschedule':
-        query = f"UPDATE Surgery SET SurgeryDate={SurgeryDate} WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
+        query = f"UPDATE Surgery SET SurgeryDate='{SurgeryDate}' WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
     elif EditType == 'reassign':
-        query = f"UPDATE Surgery SET SurgeonID={SurgeonID} WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
+        query = f"UPDATE Surgery SET SurgeonID='{SurgeonID}' WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
 
     cursor.execute(query)
 

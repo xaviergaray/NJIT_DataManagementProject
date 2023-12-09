@@ -35,8 +35,7 @@ populateTable = function() {
 
     for (var i = 0; i < SurgeryTables.length; i++) {
         var surgeryDate = new Date(SurgeryTables[i].SurgeryDate);
-
-        // TODO: Make dates compare only days, not times
+        
         // Check if the surgery matches the selected filters
         if ((selectedSurgeon === '' || SurgeryTables[i].SurgeonID == selectedSurgeon) &&
             (selectedPatient === '' || SurgeryTables[i].PatientID == selectedPatient) &&
@@ -143,15 +142,80 @@ populateTable = function() {
                                 })
                                     .then(response => response.text())
                                     .then(data => {
-                                    // Add follow-up message here
-                                        console.log('Success:', data);
                                         alert(`Patient ${PatientID}'s surgery on ${SurgeryDate} was removed!`);
                                         populateTable();
                                 })
                             }
                         })(SurgeryTables[i].SurgeryTypeID, SurgeryTables[i].SurgeonID, SurgeryTables[i].PatientID, SurgeryTables[i].SurgeryDate));
+
                     var rescheduleButton = document.createElement('button');
                     rescheduleButton.textContent = 'Reschedule';
+                    rescheduleButton.addEventListener('click', (function(SurgeryTypeID, SurgeonID, PatientID, SurgeryDate) {
+                            return function() {
+                                var year, month, day, time, enteredDate;
+                                while(true) {
+                                    while (true) {
+                                        year = prompt("Please enter the year:");
+                                        if (year === null) return;
+                                        if (year < 0 || year > 9999 || isNaN(year)) {
+                                            alert("Invalid year");
+                                        } else break;
+                                    }
+
+                                    while (true) {
+                                        month = prompt("Please enter the month:");
+                                        if (month === null) return;
+                                        if (month < 1 || month > 12 || isNaN(month)) {
+                                            alert("Invalid month");
+                                        } else break;
+                                    }
+
+                                    while (true) {
+                                        day = prompt("Please enter the day:");
+                                        if (day === null) return;
+                                        if (day < 1 || day > 31 || isNaN(day)) {
+                                            alert("Invalid day");
+                                        } else break;
+                                    }
+
+                                    while (true) {
+                                        time = prompt("Please enter the time in HH:MM format:");
+                                        if (time === null) return;
+                                        if (!/^([01]\d|2[0-3]):([0-5]\d)$/.test(time)) {
+                                            alert("Invalid time");
+                                        } else break;
+                                    }
+
+                                    enteredDate = new Date(year, month - 1, day, time.split(':')[0], time.split(':')[1]);
+                                    var currentDate = new Date();
+
+                                    if (enteredDate < currentDate) {
+                                        alert("The entered date and time is in the past. Please enter a future date and time.");
+                                    } else {
+                                        break;
+                                    }
+                                }
+
+                                fetch('/edit-surgery', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                    },
+                                    body: new URLSearchParams({
+                                        SurgeryTypeID: SurgeryTypeID,
+                                        SurgeonID: SurgeonID,
+                                        PatientID: PatientID,
+                                        SurgeryDate: formatDate(enteredDate),
+                                        EditType: 'reschedule'
+                                    })
+                                })
+                                    .then(response => response.text())
+                                    .then(data => {
+                                        alert(`Patient ${PatientID}'s surgery was rescheduled to ${enteredDate}!`);
+                                        populateTable();
+                                })
+                            }
+                        })(SurgeryTables[i].SurgeryTypeID, SurgeryTables[i].SurgeonID, SurgeryTables[i].PatientID, SurgeryTables[i].SurgeryDate));
                     var reassignButton = document.createElement('button');
                     reassignButton.textContent = 'Reassign';
 
@@ -182,6 +246,13 @@ populateTable = function() {
             })(i, SurgeryTables));
         }
     }
+}
+
+function formatDate(date) {
+    var year = date.getFullYear();
+    var month = ('0' + (date.getMonth() + 1)).slice(-2);
+    var day = ('0' + date.getDate()).slice(-2);
+    return year + '-' + month + '-' + day;
 }
 
 function populateDropdown(dropdownId, data) {
