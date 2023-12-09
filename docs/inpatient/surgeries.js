@@ -66,7 +66,7 @@ populateTable = function() {
             SurgeryTypeCell.textContent = getName(SurgeryTables[i].SurgeryTypeID, 'type');
 
             var formattedDate = surgeryDate.toGMTString();
-            
+
             var DateCell = document.createElement('td');
             DateCell.textContent = formattedDate;
 
@@ -126,6 +126,30 @@ populateTable = function() {
                     // Create "remove", "reschedule", and "reassign" buttons
                     var removeButton = document.createElement('button');
                     removeButton.textContent = 'Remove';
+                    removeButton.addEventListener('click', (function(SurgeryTypeID, SurgeonID, PatientID, SurgeryDate) {
+                            return function() {
+                                fetch('/edit-surgery', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                    },
+                                    body: new URLSearchParams({
+                                        SurgeryTypeID: SurgeryTypeID,
+                                        SurgeonID: SurgeonID,
+                                        PatientID: PatientID,
+                                        SurgeryDate: SurgeryDate,
+                                        EditType: 'remove'
+                                    })
+                                })
+                                    .then(response => response.text())
+                                    .then(data => {
+                                    // Add follow-up message here
+                                        console.log('Success:', data);
+                                        alert(`Patient ${PatientID}'s surgery on ${SurgeryDate} was removed!`);
+                                        populateTable();
+                                })
+                            }
+                        })(SurgeryTables[i].SurgeryTypeID, SurgeryTables[i].SurgeonID, SurgeryTables[i].PatientID, SurgeryTables[i].SurgeryDate));
                     var rescheduleButton = document.createElement('button');
                     rescheduleButton.textContent = 'Reschedule';
                     var reassignButton = document.createElement('button');

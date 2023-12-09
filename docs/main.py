@@ -192,6 +192,9 @@ def assign_physician():
     query = f"INSERT INTO PatientAssignedPhysician (PatientID, PhysicianID) VALUES ('{patientID}', '{physicianID}')"
     cursor.execute(query)
 
+    # Commit the transaction
+    db.commit()
+
     return 'Success'
 
 @main.route('/assign-nurse', methods=['POST'])
@@ -205,6 +208,9 @@ def assign_nurse():
     # Insert the new relationship into the database
     query = f"INSERT INTO PatientAssignedNurse (NurseID, PatientID, Shift, DateOfCare) VALUES ('{nurseID}', '{patientID}', '{shift}', '{dateOfCare}')"
     cursor.execute(query)
+
+    # Commit the transaction
+    db.commit()
 
     return 'Success'
 
@@ -322,6 +328,30 @@ def get_support_staff():
     supportStaff = [dict(zip([column[0] for column in cursor.description], row)) for row in supportStaff]
 
     return supportStaff
+
+@main.route('/edit-surgery', methods=['POST'])
+def edit_surgery():
+    # Get form data
+    SurgeryTypeID = request.form.get('SurgeryTypeID')
+    SurgeonID = request.form.get('SurgeonID')
+    PatientID = request.form.get('PatientID')
+    SurgeryDate = request.form.get('SurgeryDate')
+    EditType = request.form.get('EditType')
+
+    if EditType == 'remove':
+        query = f"DELETE FROM Surgery WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
+    elif EditType == 'reschedule':
+        query = f"UPDATE Surgery SET SurgeryDate={SurgeryDate} WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
+    elif EditType == 'reassign':
+        query = f"UPDATE Surgery SET SurgeonID={SurgeonID} WHERE SurgeryTypeID={SurgeryTypeID} AND SurgeonID={SurgeonID} AND PatientID={PatientID};"
+
+    cursor.execute(query)
+
+    # Commit the transaction
+    db.commit()
+
+    return 'Success'
+
 
 if __name__ == "__main__":
     main.run(debug=True)
