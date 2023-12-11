@@ -21,18 +21,6 @@ def index():
 def patient_management():
     return render_template('patient/PatientManagement.html')
 
-@main.route('/patient/appointments')
-def patient_management_appointments():
-    return render_template('patient/Appointments.html')
-
-@main.route('/patient/newpatient')
-def patient_management_newpatient():
-    return render_template('patient/NewPatient.html')
-
-@main.route('/patient/viewpatients')
-def patient_management_viewpatients():
-    return render_template('patient/ViewPatients.html')
-
 @main.route('/inpatient/')
 def inpatient_management():
     return render_template('inpatient/InpatientManagement.html')
@@ -56,13 +44,27 @@ def medical_staff_management():
 @main.route('/patient/PatientManagement/add_patient', methods=['POST'])
 def add_patient():
     # Get form data
-    name = request.form.get('name')
-    dob = request.form.get('dob')
-    contact = request.form.get('contact')
+    name = request.form.get('name') or None
+    gender = request.form.get('gender') or None
+    dob = request.form.get('dob') or None
+    address = request.form.get('address') or None
+    contact = request.form.get('contact') or None
+    ssn = request.form.get('ssn') or None
+    admissionDate = request.form.get('admissionDate') or None
+    pcp = request.form.get('pcp') or None
+
+    # Get the maximum ID from the Patient table
+    cursor.execute("SELECT MAX(ID) FROM Patient")
+    max_id = cursor.fetchone()[0]
+    if max_id is None:
+        max_id = 0  # This is for the case when there are no entries in the Patient table
+
+    # Increment the max_id for the new patient
+    new_id = max_id + 1
 
     # Insert data into the database
-    sql = "INSERT INTO Patients (ID, Name, Illness, Allergies, BedID, NurseID, PhysicianID, DateOfBirth, BloodType, HDL, LDL, Triglycerides, BloodSugar, SocialSecurityNumber, AdmissionDate, NursingUnit) VALUES (%s, %s, %s, %s, NULL, NULL, NULL, %s, NULL, NULL, NULL, NULL, NULL, %s, NULL, NULL)"
-    val = (1, name, dob, contact, dob, contact)
+    sql = "INSERT INTO Patient (ID, Name, Gender, DOB, Address, PhoneNumber, SocialSecurityNumber, AdmissionDate, PrimaryPhysicianID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+    val = (new_id, name, gender, dob, address, contact, ssn, admissionDate, pcp)
     cursor.execute(sql, val)
 
     # Commit the transaction
@@ -367,6 +369,36 @@ def edit_surgery():
     db.commit()
 
     return 'Success'
+
+@main.route('/get-patient-illness-diagnosis-relationship', methods=['POST'])
+def get_patient_illness_diagnosis_relationship():
+    # Get form data
+    patientID = request.form.get('patientID')
+    physicianID = request.form.get('physicianID')
+
+    # Start building the SQL query
+    query = "SELECT * FROM PatientAssignedPhysician WHERE "
+
+    # Add conditions to the query based on provided data
+    conditions = []
+    if patientID is not None:
+        conditions.append(f"PatientID={patientID}")
+    if physicianID is not None:
+        conditions.append(f"PhysicianID={physicianID}")
+
+    # If no conditions were added, remove the WHERE clause
+    if conditions:
+        query += " AND ".join(conditions)
+    else:
+        query = "SELECT * FROM PatientAssignedPhysician"
+
+    cursor.execute(query)
+    relationships = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    relationships = [dict(zip([column[0] for column in cursor.description], row)) for row in relationships]
+
+    return relationships
 
 
 if __name__ == "__main__":

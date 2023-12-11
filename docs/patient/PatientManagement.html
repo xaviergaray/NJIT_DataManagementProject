@@ -4,23 +4,113 @@
     <meta charset="UTF-8">
     <title>Newark Medical Associates - Patient Management</title>
     <link rel="stylesheet" type="text/css" href="../styles.css">
+    <script src="viewpatients.js"></script>
+    <link rel="stylesheet" type="text/css" href="viewpatients.css">
 </head>
 <body>
     <div class="container">
         <h1><a href="/">Newark Medical Associates</a></h1>
-        <h2><a href="/patient/">Patient Management</a></h2>
-        <nav2>
-            <h2><a href="/patient/newpatient">Insert a New Patient</a></h2>
-            <h2><a href="/patient/viewpatients">View Patients</a></h2>
-            <h2><a href="/patient/appointments">View Appointments</a></h2>
-        </nav2>
-        <h2>Insert a New Patient</h2>
-        <form action="/add_patient" method="post">
-            <input type="text" name="name" placeholder="Name" required>
-            <input type="date" name="dob" placeholder="DOB" required>
-            <input type="text" name="contact" placeholder="Contact Info" required>
-            <button type="submit">Submit</button>
-        </form>
+        <h2>Patient Management</h2>
+
+        <div class="main-content">
+            <form id="patientForm" action="/patient/PatientManagement/add_patient" method="post">
+                <h2>Insert a New Patient</h2>
+                <div>
+                    <label for="name">Name*:</label>
+                    <input type="text" id="name" name="name" placeholder="John Doe" required>
+                </div>
+                <div>
+                    <label for="gender">Gender*:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Select...</option>
+                        <option value="M">M</option>
+                        <option value="F">F</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="dob">Date of Birth*:</label>
+                    <input type="date" id="dob" name="dob" placeholder="DOB" required>
+                </div>
+                <div>
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" placeholder="Street, Town, State, Zipcode">
+                </div>
+                <div>
+                    <label for="contact">Phone Number:</label>
+                    <input type="text" id="contact" name="contact" placeholder="(123) 456-7890" pattern="\d{10}|\d{3}-\d{3}-\d{4}|\(\d{3}\) \d{3}-\d{4}">
+                </div>
+                <div>
+                    <label for="ssn">SSN:</label>
+                    <input type="text" id="ssn" name="ssn" placeholder="123-45-6789" pattern="\d{3}-\d{2}-\d{4}|\d{9}">
+                </div>
+                <div>
+                    <label for="admissionDate">Admission Date:</label>
+                    <input type="date" id="admissionDate" name="admissionDate" placeholder="Admission Date" required>
+                </div>
+                <div>
+                    <label for="pcp">Primary Care Physician:</label>
+                    <input type="text" id="pcp" name="pcp" placeholder="PCP">
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+
+            <div class="view-patient">
+                <div id="userInputRow">
+                    <div id="patientSelect">
+                    <!-- Rows from the database will be inserted into a dropbox here -->
+                    </div>
+
+                    <div id="relationships">
+                        <!-- Links showing patient relationships will be placed here -->
+                    </div>
+                </div>
+
+                <div id="patientTable">
+                    <!-- Patient data from the database will be shown here -->
+                </div>
+            </div>
+        </div>
     </div>
+
+    <script>
+        document.getElementById('patientForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        var patientName = document.getElementsByName('name')[0].value;
+        var contact = document.getElementById('contact').value;
+
+        // Remove non-digit characters from the phone number
+        var digits = contact.replace(/\D/g, '');
+
+        // Convert the phone number to the format (123) 456-7890
+        var formattedContact = '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+
+        // Update the contact field with the formatted phone number
+        document.getElementById('contact').value = formattedContact;
+
+        // Create a new FormData object from the form
+        var formData = new FormData(this);
+
+        // Send the form data to the server using an AJAX request
+        fetch(this.action, {
+            method: this.method,
+            body: formData
+        })
+        .then(function(response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Error: ' + response.statusText);
+            }
+        })
+        .then(function(text) {
+            alert('Patient added: ' + patientName + '\n\n' + text);
+        })
+        .catch(function(error) {
+            alert('There was an error: ' + error.message);
+        });
+    });
+    </script>
+
 </body>
 </html>
