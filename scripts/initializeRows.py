@@ -315,6 +315,68 @@ def initializeSurgeries(surgeries):
     # Commit the transaction
     db.commit()
 
+def initializeDiagnosis(diagnoses):
+    overrideTable('Diagnosis')
+
+    cursor.execute("SELECT * FROM Consultation;")
+    consults = cursor.fetchall()
+
+    cursor.execute("SELECT ID FROM Illness;")
+    IllnessIDs = [row[0] for row in cursor.fetchall()]
+
+    for i in range(1, diagnoses+1):
+        assigned_IllnessID = random.choice(IllnessIDs)
+        consult = consults[i-1]
+        PatientID = consult[0]
+        PhysicianID = consult[1]
+        DateOfDiagnosis = consult[3]
+        if assigned_IllnessID:
+            sql = f"INSERT INTO Diagnosis (PatientID, PhysicianID, DateOfDiagnosis, IllnessID, Comments) VALUES (%s, %s, %s, %s, %s)"
+            val = (PatientID,
+                   PhysicianID,
+                   DateOfDiagnosis,
+                   assigned_IllnessID,
+                   f"Comment number {i}")
+            cursor.execute(sql, val)
+
+    print(f"{diagnoses} diagnoses added successfully!")
+    # Commit the transaction
+    db.commit()
+
+def initializeConsultations(consultations):
+    overrideTable('Consultation')
+
+    cursor.execute(f"SELECT ID FROM Patient;")
+    PatientIDs = [row[0] for row in cursor.fetchall()]
+
+    cursor.execute(f"SELECT ID FROM Physician;")
+    PhysicianIDs = [row[0] for row in cursor.fetchall()]
+
+    for relationship in range(1, consultations+1):
+        if PatientIDs and PhysicianIDs:
+            assigned_PatientID = random.choice(PatientIDs)
+            assigned_PhysicianID = random.choice(PhysicianIDs)
+
+            sql = f"INSERT INTO Consultation (PatientID, PhysicianID, ConsultationType, DateOfConsult, Notes) VALUES (%s, %s, %s, %s, %s)"
+            val = (assigned_PatientID,
+                   assigned_PhysicianID,
+                   f"Consulatation Type number {relationship}",
+                   randomDate(datetime(2023, 1, 1), datetime.now()),
+                   f"Note number {relationship}")
+            cursor.execute(sql, val)
+
+        else:
+            if PatientIDs:
+                print(f'Error: there are no more PatientIDs')
+                return
+            elif PhysicianIDs:
+                print(f'Error: there are no more PhysicianIDs')
+                return
+
+    print(f"{consultations} consultations added successfully!")
+    # Commit the transaction
+    db.commit()
+
 def initializeRelationships(rel1, rel2, n):
     bFound = False
     if rel1 == 'patient' or rel2 == 'patient':
@@ -417,6 +479,28 @@ def updateEmployeeRole(EID, Role):
     update_role_val = (Role, EID)
     cursor.execute(update_role_sql, update_role_val)
 
+    db.commit()
+
+def initializeIllness(illnesses):
+    overrideTable('Illness')
+
+    for illness in range(1, illnesses + 1):
+        cursor.execute(f"INSERT INTO Illness (ID, Description) VALUES ({illness}, 'Illness {illness}')")
+
+    print(f'{illnesses} illnesses added successfully!')
+    # Commit the transaction
+    db.commit()
+
+def initializeAllergies(allergies):
+    overrideTable('Allergy')
+
+    for allergy in range(1, allergies + 1):
+        cursor.execute(f"INSERT INTO Allergy (ID, Description) VALUES ({allergy}, 'Allergy {allergy}')")
+
+    print(f'{allergy} allergies added successfully!')
+    # Commit the transaction
+    db.commit()
+
 def defaultRows():
     print('Creating tables, please do not interrupt the process.')
     initializeBedsTable(700)
@@ -433,6 +517,10 @@ def defaultRows():
     initializeSurgeryTypeSkills(10)
     initializeSurgeries(15)
     initializeSupportStaff(20)
+    initializeIllness(30)
+    initializeAllergies(25)
+    initializeConsultations(20)
+    initializeDiagnosis(15)
 
 if __name__ == "__main__":
     # Parse command-line arguments
@@ -450,6 +538,10 @@ if __name__ == "__main__":
     parser.add_argument('-surgerytypeskills', type=int, help='the number of surgery type skills to insert')
     parser.add_argument('-surgeries', type=int, help='the number of surgeries to insert')
     parser.add_argument('-supportstaff', type=int, help='the number of support staff to insert')
+    parser.add_argument('-illnesses', type=int, help='the number of illnesses to insert')
+    parser.add_argument('-allergies', type=int, help='the number of allergies to insert')
+    parser.add_argument('-diagnoses', type=int, help='the number of diagnoses to insert')
+    parser.add_argument('-consultations', type=int, help='the number of consultations to insert')
     parser.add_argument('-default', action='store_true', help='initialize as many rows in the database as this script allows')
     args = parser.parse_args()
 
@@ -485,3 +577,11 @@ if __name__ == "__main__":
         initializeSurgeries(args.surgeries)
     if args.supportstaff is not None:
         initializeSupportStaff(args.supportstaff)
+    if args.illnesses is not None:
+        initializeIllness(args.illnesses)
+    if args.allergies is not None:
+        initializeAllergies(args.allergies)
+    if args.diagnoses is not None:
+        initializeDiagnosis(args.diagnoses)
+    if args.consultations is not None:
+        initializeConsultations(args.consultations)
