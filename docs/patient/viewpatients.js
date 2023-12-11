@@ -7,7 +7,7 @@ window.onload = async function() {
     patients = await responsePatients.json();
     let selectedPatientID = patients[0].ID;
 
-    let responseNurseRelationships = await fetch('/get-patient-nurse-relationship', {
+    let responseDiagnoses = await fetch('/get-patient-nurse-relationship', {
         method: 'POST',
     });
     nurseRelationships = await responseNurseRelationships.json();

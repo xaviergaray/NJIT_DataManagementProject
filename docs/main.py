@@ -370,14 +370,15 @@ def edit_surgery():
 
     return 'Success'
 
-@main.route('/get-patient-illness-diagnosis-relationship', methods=['POST'])
-def get_patient_illness_diagnosis_relationship():
+@main.route('/get-patient-diagnosis', methods=['POST'])
+def get_patient_diagnosis():
     # Get form data
     patientID = request.form.get('patientID')
     physicianID = request.form.get('physicianID')
+    dateOfConsult = request.form.get('dateOfConsult')
 
     # Start building the SQL query
-    query = "SELECT * FROM PatientAssignedPhysician WHERE "
+    query = "SELECT * FROM Diagnosis WHERE "
 
     # Add conditions to the query based on provided data
     conditions = []
