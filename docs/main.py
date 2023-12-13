@@ -386,12 +386,14 @@ def get_patient_diagnosis():
         conditions.append(f"PatientID={patientID}")
     if physicianID is not None:
         conditions.append(f"PhysicianID={physicianID}")
+    if dateOfConsult is not None:
+        conditions.append(f"DateOfConsult='{dateOfConsult}'")  # Assuming DateOfConsult is a column in your Diagnosis table
 
     # If no conditions were added, remove the WHERE clause
     if conditions:
         query += " AND ".join(conditions)
     else:
-        query = "SELECT * FROM PatientAssignedPhysician"
+        query = "SELECT * FROM Diagnosis"
 
     cursor.execute(query)
     relationships = cursor.fetchall()

@@ -45,7 +45,7 @@
                 </div>
                 <div>
                     <label for="admissionDate">Admission Date:</label>
-                    <input type="date" id="admissionDate" name="admissionDate" placeholder="Admission Date" required>
+                    <input type="date" id="admissionDate" name="admissionDate" placeholder="Admission Date">
                 </div>
                 <div>
                     <label for="pcp">Primary Care Physician:</label>
@@ -73,7 +73,7 @@
     </div>
 
     <script>
-        document.getElementById('patientForm').addEventListener('submit', function(event) {
+    document.getElementById('patientForm').addEventListener('submit', function(event) {
         event.preventDefault(); // Prevent the default form submission
 
         var patientName = document.getElementsByName('name')[0].value;
@@ -109,8 +109,15 @@
         .catch(function(error) {
             alert('There was an error: ' + error.message);
         });
+        // Get the select element by its id
+let select = document.getElementById('selectPatient');
+
+// If the select element exists, remove it
+if (select) {
+    select.parentNode.removeChild(select);
+}
+       window.onload();
     });
     </script>
-
 </body>
 </html>
