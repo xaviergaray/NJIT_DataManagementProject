@@ -343,6 +343,16 @@ def get_support_staff():
 
     return supportStaff
 
+@main.route('/get-consultation')
+def get_consultation():
+    cursor.execute("SELECT * FROM Consultation")
+    consultations = cursor.fetchall()
+
+    # Convert the list of tuples to a list of dictionaries
+    consultations = [dict(zip([column[0] for column in cursor.description], row)) for row in consultations]
+
+    return consultations
+
 @main.route('/edit-surgery', methods=['POST'])
 def edit_surgery():
     # Get form data

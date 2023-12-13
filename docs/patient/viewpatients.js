@@ -1,5 +1,6 @@
 let physicians;
 let diagnoses;
+let consultations;
 let employees;
 let patients;
 
@@ -18,6 +19,9 @@ window.onload = async function() {
 
     response = await fetch('/get-employees');
     employees = await response.json();
+
+    response = await fetch('/get-consultation');
+    consultations = await response.json();
 
     let select = document.createElement('select');
     select.id = 'selectPatient';
@@ -50,14 +54,24 @@ window.onload = async function() {
 
     // Add Diagnoses Table link
     let diagnosesTableLink = document.createElement('a');
-    diagnosesTableLink.textContent = 'Show Diagnoses Table';
+    diagnosesTableLink.textContent = 'Show Diagnoses';
     diagnosesTableLink.href = '#';
     diagnosesTableLink.onclick = function() {
         createPatientTable(diagnoses, selectedPatientID, 'diagnoses');
         return false;  // Prevent default action
     };
-    parentElement.appendChild(diagnosesTableLink);
 
+    // Add Consultations Table link
+    let consultationsTableLink = document.createElement('a');
+    consultationsTableLink.textContent = 'Show Appointments';
+    consultationsTableLink.href = '#';
+    consultationsTableLink.onclick = function() {
+        createPatientTable(consultations, selectedPatientID, 'consultations');
+        return false;  // Prevent default action
+    };
+
+    parentElement.appendChild(diagnosesTableLink);
+    parentElement.appendChild(consultationsTableLink);
 
     document.getElementById('patientSelect').appendChild(select);
 }
@@ -110,9 +124,7 @@ function createPatientTable(patients, patientID, fieldValuesTitle) {
                 row.appendChild(cellKey);
 
                 let cellValue = document.createElement('td');
-                if(key === 'PhysicianID') {
-                    patient[key] = getName(patient[key], 'employee');
-                }
+
                 cellValue.textContent = patient[key] || '';  // Use an empty string if the key is not in the data
                 row.appendChild(cellValue);
 
@@ -160,6 +172,18 @@ function getFieldValues(field) {
         };
 
         fieldOrder = ['PhysicianID', 'DateOfDiagnosis', 'IllnessID'];
+    }
+
+    if (field === 'consultations') {
+        fieldNames = {
+            'PatientID': 'Patient',
+            'PhysicianID': 'Physician',
+            'ConsultationType': 'Consultation Type',
+            'DateOfConsult': 'Date of Consult',
+            'Notes': 'Notes'
+        };
+
+        fieldOrder = ['PhysicianID', 'DateOfConsult','ConsultationType', 'Notes'];
     }
 
     return {fieldNames, fieldOrder};
