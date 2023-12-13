@@ -1,20 +1,23 @@
 let physicians;
 let diagnoses;
+let employees;
 let patients;
 
 window.onload = async function() {
-    let responsePatients = await fetch('/get-patients');
-    patients = await responsePatients.json();
+    let response = await fetch('/get-patients');
+    patients = await response.json();
     let selectedPatientID = patients[0].ID;
 
-    let responseDiagnoses = await fetch('/get-patient-diagnosis', {
+    response = await fetch('/get-patient-diagnosis', {
         method: 'POST',
     });
-    diagnoses = await responseDiagnoses.json();
-    console.log(diagnoses);
+    diagnoses = await response.json();
 
-    let responsePhysician = await fetch('/get-physician');
-    physicians = await responsePhysician.json();
+    response = await fetch('/get-physician');
+    physicians = await response.json();
+
+    response = await fetch('/get-employees');
+    employees = await response.json();
 
     let select = document.createElement('select');
     select.id = 'selectPatient';
@@ -59,6 +62,20 @@ window.onload = async function() {
     document.getElementById('patientSelect').appendChild(select);
 }
 
+getName = function(ID, Table) {
+    var name;
+    if (Table === 'patient') {
+        name = Patients.find(p => p.ID === ID).Name;
+    }
+    else if (Table === 'employee') {
+        name = employees.find(p => p.ID === ID).Name;
+    }
+    else {
+        console.log('Error: Table not found');
+    }
+
+    return name;
+}
 
 function createPatientTable(patients, patientID, fieldValuesTitle) {
     let fieldValues = getFieldValues(fieldValuesTitle)
@@ -93,6 +110,9 @@ function createPatientTable(patients, patientID, fieldValuesTitle) {
                 row.appendChild(cellKey);
 
                 let cellValue = document.createElement('td');
+                if(key === 'PhysicianID') {
+                    patient[key] = getName(patient[key], 'employee');
+                }
                 cellValue.textContent = patient[key] || '';  // Use an empty string if the key is not in the data
                 row.appendChild(cellValue);
 
@@ -102,6 +122,9 @@ function createPatientTable(patients, patientID, fieldValuesTitle) {
 
         table.appendChild(tbody);  // Append the tbody to the table
         patientTableDiv.appendChild(table);
+        // Add a horizontal line after each diagnosis
+        let hr = document.createElement('br');
+        patientTableDiv.appendChild(hr);
     }
 }
 
@@ -136,7 +159,7 @@ function getFieldValues(field) {
             'IllnessID': 'Illness'
         };
 
-        fieldOrder = ['PatientID', 'PhysicianID', 'DateOfDiagnosis', 'IllnessID'];
+        fieldOrder = ['PhysicianID', 'DateOfDiagnosis', 'IllnessID'];
     }
 
     return {fieldNames, fieldOrder};
