@@ -413,6 +413,24 @@ def get_patient_diagnosis():
 
     return relationships
 
+@main.route('/set-consultation', methods=['POST'])
+def set_consultation():
+    # Get form data
+    patientID = request.form.get('patientID')
+    physicianID = request.form.get('physicianID')
+    date = request.form.get('date')
+    reason = request.form.get('reason')
+
+    # Insert data into the database
+    sql = "INSERT INTO Consultation (PatientID, PhysicianID, ConsultationType, DateOfConsult) VALUES (%s, %s, %s, %s)"
+    val = (patientID, physicianID, reason, date)
+    cursor.execute(sql, val)
+
+    # Commit the transaction
+    db.commit()
+
+    return f"Consultation set on {date}."
+
 
 if __name__ == "__main__":
     main.run(debug=True)

@@ -4,14 +4,15 @@
 
 .main-content {
     display: flex;
-    justify-content: space-between;
+    align-items: flex-start;
 }
 
 #patientForm {
     border: 1px solid #ccc; /* Set border properties as needed */
     padding: 20px; /* Optional: Add padding for better visual appearance */
     max-width: 400px; /* Optional: Set a maximum width for the form container */
-    margin: auto; /* Optional: Center the form container horizontally */
+    margin-right: 5vw; /* Optional: Center the form container horizontally */
+    align-self: flex-start;
 }
 
 table {
@@ -79,9 +80,20 @@ th {
     display: flex;
 }
 
+/* The Close Button */
+.close {
+  cursor: pointer;
+  /* Other styles... */
+}
+
+/* The Submit Button */
+input[type="submit"] {
+  cursor: pointer;
+}
+
 /* Style for the modal */
 .modal {
-    display: flex;
+    display: none; /* Hidden by default */
     justify-content: center;
     align-items: center;
     position: fixed;

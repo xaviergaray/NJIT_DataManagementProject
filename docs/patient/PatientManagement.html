@@ -55,6 +55,26 @@
             </form>
 
             <div class="view-patient">
+                <!-- The "Schedule Appointment" button -->
+                <button id="scheduleButton">Schedule Appointment</button>
+
+                <!-- The modal dialog -->
+                <div id="myModal" class="modal">
+                  <div class="modal-content">
+                    <span class="close">×</span>
+                    <form id="appointmentForm">
+                      <label for="physician">Physician:</label><br>
+                      <select id="physician" name="physician"></select><br>
+                      <label for="date">Date:</label><br>
+                      <input type="date" id="date" name="date"><br>
+                      <label for="reason">Reason for appointment:</label><br>
+                      <input type="text" id="reason" name="reason"><br>
+                      <input type="submit" value="Submit">
+                    </form>
+                  </div>
+                </div>
+
+
                 <div id="userInputRow">
                     <div id="patientSelect">
                     <!-- Rows from the database will be inserted into a dropbox here -->
@@ -71,53 +91,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-    document.getElementById('patientForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the default form submission
-
-        var patientName = document.getElementsByName('name')[0].value;
-        var contact = document.getElementById('contact').value;
-
-        // Remove non-digit characters from the phone number
-        var digits = contact.replace(/\D/g, '');
-
-        // Convert the phone number to the format (123) 456-7890
-        var formattedContact = '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
-
-        // Update the contact field with the formatted phone number
-        document.getElementById('contact').value = formattedContact;
-
-        // Create a new FormData object from the form
-        var formData = new FormData(this);
-
-        // Send the form data to the server using an AJAX request
-        fetch(this.action, {
-            method: this.method,
-            body: formData
-        })
-        .then(function(response) {
-            if (response.ok) {
-                return response.text();
-            } else {
-                throw new Error('Error: ' + response.statusText);
-            }
-        })
-        .then(function(text) {
-            alert('Patient added: ' + patientName + '\n\n' + text);
-        })
-        .catch(function(error) {
-            alert('There was an error: ' + error.message);
-        });
-        // Get the select element by its id
-let select = document.getElementById('selectPatient');
-
-// If the select element exists, remove it
-if (select) {
-    select.parentNode.removeChild(select);
-}
-       window.onload();
-    });
-    </script>
 </body>
 </html>
