@@ -93,6 +93,80 @@ window.onload = async function() {
             PopulateTable();
         });
     });
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("add-employee-btn");
+    var span = document.getElementsByClassName("close")[0];
+
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    let selectPhys = document.getElementById('physician');
+    for(let physician of physicians) {
+        let option = document.createElement('option');
+        option.value = physician.ID;
+        option.text = getName(physician.ID, 'employee');
+
+        selectPhys.appendChild(option);
+    }
+
+    document.getElementById('appointmentForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var physician = document.getElementById('physician').value;
+        var date = document.getElementById('date').value;
+        var reason = document.getElementById('reason').value;
+
+        // Create a new FormData object from the form
+        var formData = new FormData(this);
+        formData.append('patientID', selectedPatientID);
+        formData.append('physicianID', physician);
+
+        // Send the form data to the server using an AJAX request
+        fetch('/set-consultation', {
+            method: 'POST',
+            body: formData
+        })
+        .then(function(response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Error: ' + response.statusText);
+            }
+        })
+        .then(function(text) {
+            alert('Consultation set: ' + '\n\n' + text);
+
+            // Fetch the updated list of consultations from the server
+            fetch('/get-consultation')
+            .then(response => response.json())
+            .then(updatedConsultations => {
+                consultations = updatedConsultations;
+
+                if (screen === 2)
+                {
+                    createPatientTable(consultations, selectedPatientID, 'consultations');
+                }
+
+            });
+        })
+        .catch(function(error) {
+            alert('There was an error: ' + error.message);
+        });
+
+        // Close the modal
+        document.getElementById('myModal').style.display = 'none';
+    });
 }
 
 PopulateTable = async function() {

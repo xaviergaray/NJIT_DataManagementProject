@@ -69,7 +69,8 @@ populateTable = function() {
             var SurgeryTypeCell = document.createElement('td');
             SurgeryTypeCell.textContent = getName(SurgeryTables[i].SurgeryTypeID, 'type');
 
-            var formattedDate = surgeryDate.toGMTString();
+            var formattedDate = surgeryDate.toISOString();
+            formattedDate = formattedDate.replace('T', ' ').substring(0, formattedDate.indexOf('.'));
 
             var DateCell = document.createElement('td');
             DateCell.textContent = formattedDate;

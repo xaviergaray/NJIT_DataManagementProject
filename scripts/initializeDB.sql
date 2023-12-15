@@ -194,7 +194,7 @@ CREATE TABLE Surgery (
     SurgeonID INT,
     PatientID INT,
     OperationTheatreNumber VARCHAR(255),
-    SurgeryDate DATE,
+    SurgeryDate DATETIME,
     FOREIGN KEY (SurgeryTypeID) REFERENCES SurgeryType(ID),
     FOREIGN KEY (SurgeonID) REFERENCES Surgeon(ID),
     FOREIGN KEY (PatientID) REFERENCES Patient(ID),
