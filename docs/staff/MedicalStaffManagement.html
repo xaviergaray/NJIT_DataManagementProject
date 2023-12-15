@@ -25,7 +25,7 @@
                                 <th>ID<button class="sort-btn" data-sort="ID"><i class="fas fa-sort"></i></button></th>
                                 <th>Name<button class="sort-btn" data-sort="Name"><i class="fas fa-sort"></i></button></th>
                                 <th>Role<button class="sort-btn" data-sort="Role"><i class="fas fa-sort"></i></button></th>
-                                <th>Phone Number<button class="sort-btn" data-sort="PhoneNumber"><i class="fas fa-sort"></i></button></th>
+                                <th>Phone Number<button class="sort-btn" data-sort="TelephoneNumber"><i class="fas fa-sort"></i></button></th>
                                 <th>Shift<button class="sort-btn" data-sort="Shift"><i class="fas fa-sort"></i></button></th>
                                 <th><button id="add-employee-btn">+</button></th>
                             </tr-h>
@@ -41,7 +41,7 @@
                 <div id="myModal" class="modal">
                   <div class="modal-content">
                     <span class="close">×</span>
-                    <form id="appointmentForm">
+                    <form id="EmployeeForm">
                         <div class="modalInputField">
                             <label for="Name">Name:</label><br>
                             <input type="text" id="Name" name="Name" required></input>
@@ -98,6 +98,16 @@
                         <label for="rolefilter">Role:</label>
                         <select id="rolefilter">
                             <option value="all">All</option>
+                        </select>
+                        <br>
+                        <br>
+                        <label for="shiftfilter">Shift:</label>
+                        <select id="shiftfilter">
+                            <option value="all">All</option>
+                            <option value="unassigned">Unassigned</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
                         </select>
                     </div>
                 </div>

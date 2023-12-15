@@ -1,15 +1,9 @@
 var employees;
-var patientAssignedNurses;
 
 window.onload = async function() {
     // Initialize DB variables
     let response = await fetch('/get-employees');
     employees = await response.json();
-
-    response = await fetch('/get-patient-nurse-relationship', {
-        method: 'POST',
-    });
-    patientAssignedNurses = await response.json();
 
     // Populate Table
     PopulateTable();
@@ -120,7 +114,7 @@ window.onload = async function() {
         selectPhys.appendChild(option);
     }
 
-    document.getElementById('appointmentForm').addEventListener('submit', function(event) {
+    document.getElementById('EmployeeForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
         var physician = document.getElementById('physician').value;
@@ -218,12 +212,7 @@ PopulateTable = async function() {
 
         var shiftCell = document.createElement('td');
         if (employee.Shift == null) {
-            if (employee.Role == 'Nurse') {
-                shiftCell.textContent = '1';
-            } else
-            {
-                shiftCell.textContent = 'No Assigned Shift';
-            }
+            shiftCell.textContent = 'No Assigned Shift';
         } else {
             shiftCell.textContent = employee.Shift;
         }
