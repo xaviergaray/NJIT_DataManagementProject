@@ -1,6 +1,7 @@
 let physicianRelationships;
 let nurseRelationships;
 let patients;
+let employees;
 
 window.onload = async function() {
     let responsePatients = await fetch('/get-patients');
@@ -16,6 +17,9 @@ window.onload = async function() {
         method: 'POST',
     });
     physicianRelationships = await responsePhysicianRelationships.json();
+
+    let responseEmployees = await fetch('/get-employees')
+    employees = await responseEmployees.json();
 
     let select = document.createElement('select');
     select.onchange = function() {
@@ -280,22 +284,17 @@ function createAssignButton(text, patientID, callback, fieldValuesTitle) {
         let select = document.createElement('select');
         let shiftDropdown;
         let dateTextbox;
-        for (let item of available) {
-            let responseEmployee = await fetch('/get-employee', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    EID: item.ID,
-                })
-            });
-            let employee = await responseEmployee.json();
 
-            let option = document.createElement('option');
-            option.value = item.ID;
-            option.text = employee.Name;
-            select.appendChild(option);
+        for (let item of available) {
+            for(let employee of employees) {
+                if (employee.ID === item.ID) {
+                    let option = document.createElement('option');
+                    option.value = item.ID;
+                    option.text = employee.Name;
+                    select.appendChild(option);
+                    break;
+                }
+            }
 
         }
         container.appendChild(select);

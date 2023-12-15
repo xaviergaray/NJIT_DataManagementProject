@@ -176,6 +176,15 @@ window.onload = async function() {
       }
     }
 
+    let selectPhys2 = document.getElementById('physician');
+    for(let physician of physicians) {
+        let option = document.createElement('option');
+        option.value = physician.ID;
+        option.text = getName(physician.ID, 'employee');
+
+        selectPhys2.appendChild(option);
+    }
+
     document.getElementById('appointmentForm').addEventListener('submit', function(event) {
     event.preventDefault();
 
