@@ -1,0 +1,46 @@
+/* The Close Button */
+.close {
+  cursor: pointer;
+  /* Other styles... */
+}
+
+/* The Submit Button */
+input[type="submit"] {
+  cursor: pointer;
+}
+
+/* Style for the modal */
+.modal {
+    display: none; /* Hidden by default */
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fff;
+    padding: 2vh;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Style for the dropdown and button container */
+.dropdown-button-container {
+    border: 1px solid #ccc;
+    background-color: #bd7a7a;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+}

@@ -2,19 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Newark Medical Associates - Medical Staff Management</title>
+    <title>NMA - In-patient Management</title>
     <link rel="stylesheet" type="text/css" href="../styles.css">
+    <link rel="stylesheet" type="text/css" href="commonStyles.css">
+    <link rel="stylesheet" type="text/css" href="staff.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="staff.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Newark Medical Associates</h1>
-        <h2>Insert a New Patient</h2>
-        <form action="/add_patient" method="post">
-            <input type="text" name="name" placeholder="Name" required>
-            <input type="date" name="dob" placeholder="DOB" required>
-            <input type="text" name="contact" placeholder="Contact Info" required>
-            <button type="submit">Submit</button>
-        </form>
+        <h1><a href="/">Newark Medical Associates</a></h1>
+        <h2><a href="/staff/">Staff Management</a></h2>
+
+        <div class="inpatient-management-container">
+            <div class="scrollBoxContainer">
+                <h3>Staff</h3>
+
+                <div id="scrollBox">
+                    <table id="databaseItems">
+                        <thead>
+                            <tr-h>
+                                <th>ID<button class="sort-btn" data-sort="ID"><i class="fas fa-sort"></i></button></th>
+                                <th>Name<button class="sort-btn" data-sort="Name"><i class="fas fa-sort"></i></button></th>
+                                <th>Role<button class="sort-btn" data-sort="Role"><i class="fas fa-sort"></i></button></th>
+                                <th>Phone Number<button class="sort-btn" data-sort="PhoneNumber"><i class="fas fa-sort"></i></button></th>
+                                <th>Shift<button class="sort-btn" data-sort="Shift"><i class="fas fa-sort"></i></button></th>
+                                <th><button id="add-surgery-btn">+</button></th>
+                            </tr-h>
+                        </thead>
+                        <tbody>
+                            <!-- Rows from the database will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- The modal dialog -->
+                <div id="myModal" class="modal">
+                  <div class="modal-content">
+                    <span class="close">×</span>
+                    <form id="appointmentForm">
+                      <label for="Employee">Physician:</label><br>
+                      <select id="physician" name="physician"></select><br>
+                      <label for="date">Date:</label><br>
+                      <input type="date" id="date" name="date"><br>
+                      <label for="reason">Reason for appointment:</label><br>
+                      <input type="text" id="reason" name="reason"><br>
+                      <input type="submit" value="Submit">
+                    </form>
+                  </div>
+                </div>
+
+            <div class="filters-container">
+                <h3>Filters</h3>
+
+                <div class="filters">
+                    <div class="role-filters">
+                        <label for="rolefilter">Role:</label>
+                        <select id="rolefilter">
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
