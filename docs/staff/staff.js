@@ -168,6 +168,16 @@ window.onload = async function() {
         var salary = document.getElementById('Salary').value;
         var ssn = document.getElementById('ssn').value;
 
+        // Remove non-digit characters from the phone number
+        var digits = TelephoneNumber.replace(/\D/g, '');
+
+        // Convert the phone number to the format (123) 456-7890
+        var formattedContact = '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+
+        // Update the contact field with the formatted phone number
+        if(document.getElementById('contact').value)
+        document.getElementById('contact').value = formattedContact;
+
         if (shift === '') {
             shift = null;
         }
@@ -180,7 +190,7 @@ window.onload = async function() {
         var editfield = [];
         if (name !== originalValues.Name) editfield.push('Name');
         if (role !== originalValues.Role) editfield.push('Role');
-        if (TelephoneNumber !== originalValues.TelephoneNumber) editfield.push('TelephoneNumber');
+        if (formattedContact !== originalValues.TelephoneNumber) editfield.push('TelephoneNumber');
         if (gender !== originalValues.Gender) editfield.push('Gender');
         if (shift !== originalValues.Shift) editfield.push('Shift');
         if (address !== originalValues.Address) editfield.push('Address');
@@ -198,7 +208,7 @@ window.onload = async function() {
         }
         formData.append('name', name);
         formData.append('role', role);
-        formData.append('TelephoneNumber', TelephoneNumber);
+        formData.append('TelephoneNumber', formattedContact);
         formData.append('gender', gender);
         formData.append('shift', shift);
         formData.append('address', address);
