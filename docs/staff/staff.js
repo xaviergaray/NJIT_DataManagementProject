@@ -110,13 +110,13 @@ window.onload = async function() {
 
     span.onclick = function() {
       modal.style.display = "none";
-      removeBtn.style.display = 'none'
+      removeBtn.style.display = 'none';
     }
 
     window.onclick = function(event) {
       if (event.target == modal) {
         modal.style.display = "none";
-        removeBtn.style.display = 'none'
+        removeBtn.style.display = 'none';
       }
     }
 
@@ -145,6 +145,9 @@ window.onload = async function() {
             .then(response => response.json())
             .then(updatedEmployees => {
                 employees = updatedEmployees;
+                PopulateTable();
+                modal.style.display = "none";
+                removeBtn.style.display = 'none';
             });
         })
         .catch(function(error) {
@@ -158,7 +161,7 @@ window.onload = async function() {
         // Get all the fields
         var name = document.getElementById('Name').value;
         var role = document.getElementById('Role').value;
-        var contact = document.getElementById('contact').value;
+        var TelephoneNumber = document.getElementById('contact').value;
         var gender = document.getElementById('gender').value;
         var shift = document.getElementById('Shift').value;
         var address = document.getElementById('address').value;
@@ -177,7 +180,7 @@ window.onload = async function() {
         var editfield = [];
         if (name !== originalValues.Name) editfield.push('Name');
         if (role !== originalValues.Role) editfield.push('Role');
-        if (contact !== originalValues.TelephoneNumber) editfield.push('TelephoneNumber');
+        if (TelephoneNumber !== originalValues.TelephoneNumber) editfield.push('TelephoneNumber');
         if (gender !== originalValues.Gender) editfield.push('Gender');
         if (shift !== originalValues.Shift) editfield.push('Shift');
         if (address !== originalValues.Address) editfield.push('Address');
@@ -195,7 +198,7 @@ window.onload = async function() {
         }
         formData.append('name', name);
         formData.append('role', role);
-        formData.append('contact', contact);
+        formData.append('TelephoneNumber', TelephoneNumber);
         formData.append('gender', gender);
         formData.append('shift', shift);
         formData.append('address', address);
@@ -223,6 +226,9 @@ window.onload = async function() {
             .then(response => response.json())
             .then(updatedEmployees => {
                 employees = updatedEmployees;
+                PopulateTable();
+                modal.style.display = "none";
+                removeBtn.style.display = 'none';
             });
         })
         .catch(function(error) {

@@ -438,7 +438,7 @@ def set_employee():
     id = request.form.get('id')
     name = request.form.get('name')
     role = request.form.get('role')
-    contact = request.form.get('contact')
+    contact = request.form.get('TelephoneNumber')
     gender = request.form.get('gender')
     shift = request.form.get('shift')
     address = request.form.get('address')
@@ -507,6 +507,9 @@ def set_employee():
 
         # Create a tuple of values
         val = tuple(request.form.get(field) for field in editfield) + (id,)
+
+        print(editfield)
+        print(val)
 
         returnString = f'Employee {name} was modified'
 
