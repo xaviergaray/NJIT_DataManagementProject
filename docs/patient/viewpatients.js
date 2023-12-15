@@ -26,6 +26,17 @@ window.onload = async function() {
     response = await fetch('/get-consultation');
     consultations = await response.json();
 
+    // Get the select element
+    let selectPhys = document.getElementById("pcp");
+
+    // Add each physician as an option
+    for (var i = 0; i < physicians.length; i++) {
+        var option = document.createElement("option");
+        option.value = physicians[i].ID;
+        option.text = getName(physicians[i].ID, 'employee');
+        selectPhys.appendChild(option);
+    }
+
     document.getElementById('patientForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -163,15 +174,6 @@ window.onload = async function() {
       if (event.target == modal) {
         modal.style.display = "none";
       }
-    }
-
-    let selectPhys = document.getElementById('physician');
-    for(let physician of physicians) {
-        let option = document.createElement('option');
-        option.value = physician.ID;
-        option.text = getName(physician.ID, 'employee');
-
-        selectPhys.appendChild(option);
     }
 
     document.getElementById('appointmentForm').addEventListener('submit', function(event) {
