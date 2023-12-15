@@ -43,19 +43,19 @@
                     <span class="close">×</span>
                     <form id="EmployeeForm">
                         <div class="modalInputField">
-                            <label for="Name">Name:</label><br>
+                            <label for="Name">Name*:</label><br>
                             <input type="text" id="Name" name="Name" required></input>
                         </div>
                         <div class="modalInputField">
                             <label for="Role">Role:</label><br>
-                            <input type="text" id="Role" name="Role" required><br>
+                            <input type="text" id="Role" name="Role"><br>
                         </div>
                         <div class="modalInputField">
-                            <label for="contact">Phone Number:</label>
+                            <label for="contact">Phone Number*:</label>
                             <input type="text" id="contact" name="contact" placeholder="(123) 456-7890" pattern="\d{10}|\d{3}-\d{3}-\d{4}|\(\d{3}\) \d{3}-\d{4}" required>
                         </div>
                         <div class="modalInputField">
-                            <label for="gender">Gender: </label>
+                            <label for="gender">Gender*: </label>
                             <select id="gender" name="gender" required>
                                 <option value="">Select...</option>
                                 <option value="M">M</option>
@@ -65,7 +65,7 @@
                         <br>
                         <div class="modalInputField">
                             <label for="Shift">Shift: </label><br>
-                            <select id="Shift" name="Shift" required>
+                            <select id="Shift" name="Shift">
                                 <option value="">Select...</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -78,7 +78,7 @@
                         </div>
                         <div class="modalInputField">
                             <label for="Salary">Salary:</label>
-                            <input type="text" id="Salary" name="Salary" placeholder="Amount">
+                            <input type="number" id="Salary" name="Salary" min="0" max="99999999" placeholder="Amount">
                         </div>
                         <div class="modalInputField">
                             <label for="ssn">SSN:</label>
@@ -86,7 +86,7 @@
                         </div>
                         <input type="submit" value="Submit">
                     </form>
-
+                      <button id="removeButton" style="display: none;">Remove</button>
                   </div>
                 </div>
 

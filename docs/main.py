@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+import json
 import mysql.connector
 
 main = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
@@ -430,6 +431,107 @@ def set_consultation():
     db.commit()
 
     return f"Consultation set on {date}."
+
+@main.route('/set-employee', methods=['POST'])
+def set_employee():
+    # Get form data
+    id = request.form.get('id')
+    name = request.form.get('name')
+    role = request.form.get('role')
+    contact = request.form.get('contact')
+    gender = request.form.get('gender')
+    shift = request.form.get('shift')
+    address = request.form.get('address')
+    salary = request.form.get('salary')
+    ssn = request.form.get('ssn')
+    editfield = json.loads(request.form.get('editfield'))
+
+    # Check if shift is not a number
+    try:
+        shift = int(shift)  # Try to convert shift to an integer
+    except ValueError:
+        shift = None  # If it fails, set shift to None
+
+    returnString = 'Backend Error'
+
+    # If adding an employee
+    if (id is None):
+        # Get the maximum ID from the Employee table
+        cursor.execute("SELECT MAX(ID) FROM Employee")
+        id = cursor.fetchone()[0]
+        if id is None:
+            id = 0  # This is for the case when there are no entries in the Employee table
+        id = id + 1
+
+        # Create a dictionary of all fields and their corresponding values
+        data = {
+            'ID': id,
+            'Name': name,
+            'Gender': gender,
+            'Address': address,
+            'TelephoneNumber': contact,
+            'Role': role,
+            'Salary': salary,
+            'SocialSecurityNumber': ssn,
+            'Shift': shift
+        }
+
+        # Filter out the fields that are not empty
+        data = {k: v for k, v in data.items() if v}
+
+        # Construct the SQL query
+        sql = "INSERT INTO Employee ({}) VALUES ({})".format(
+            ', '.join(data.keys()),
+            ', '.join(['%s'] * len(data))
+        )
+
+        # Execute the SQL query
+        cursor.execute(sql, list(data.values()))
+
+        returnString = f'Employee {name} was added.'
+    # If editing an employee
+    else:
+        # Start the SQL statement
+        sql = "UPDATE Employee SET "
+
+        # Loop through the edit fields
+        for field in editfield:
+            # Add each field to the SQL statement
+            sql += f"{field} = %s, "
+
+        # Remove the trailing comma and space
+        sql = sql[:-2]
+
+        # Add the WHERE clause to the SQL statement
+        sql += " WHERE ID = %s"
+
+        # Create a tuple of values
+        val = tuple(request.form.get(field) for field in editfield) + (id,)
+
+        returnString = f'Employee {name} was modified'
+
+        cursor.execute(sql, val)
+
+    # Commit the transaction
+    db.commit()
+
+
+    return returnString;
+
+@main.route('/remove-employee', methods=['POST'])
+def remove_employee():
+    # Get form data
+    employeeID = request.form.get('employeeID')
+
+    # Delete data from the database
+    sql = f"DELETE FROM Employee WHERE ID = {employeeID};"
+    cursor.execute(sql)
+
+    # Commit the transaction
+    db.commit()
+
+    return f"Removed the employee with ID {employeeID} from the Employee table"
+
 
 
 if __name__ == "__main__":

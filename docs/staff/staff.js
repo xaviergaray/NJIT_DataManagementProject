@@ -1,4 +1,8 @@
 var employees;
+var editfield;
+var editEmployeeID;
+var originalValues;
+var ellipsesPressed;
 
 window.onload = async function() {
     // Initialize DB variables
@@ -39,6 +43,12 @@ window.onload = async function() {
     // Role Filter event listener
     var roleFilter = document.getElementById('rolefilter');
     roleFilter.addEventListener('change', function() {
+        PopulateTable();
+    });
+
+    // Shift Filter event listener
+    var shiftFilter = document.getElementById('shiftfilter');
+    shiftFilter.addEventListener('change', function() {
         PopulateTable();
     });
 
@@ -88,46 +98,112 @@ window.onload = async function() {
         });
     });
     var modal = document.getElementById("myModal");
+    var removeBtn = document.getElementById('removeButton');
     var btn = document.getElementById("add-employee-btn");
     var span = document.getElementsByClassName("close")[0];
 
     btn.onclick = function() {
       modal.style.display = "block";
+      ellipsesPressed = false;
+      resetModalValues();
     }
 
     span.onclick = function() {
       modal.style.display = "none";
+      removeBtn.style.display = 'none'
     }
 
     window.onclick = function(event) {
       if (event.target == modal) {
         modal.style.display = "none";
+        removeBtn.style.display = 'none'
       }
     }
 
-    let selectPhys = document.getElementById('physician');
-    for(let physician of physicians) {
-        let option = document.createElement('option');
-        option.value = physician.ID;
-        option.text = getName(physician.ID, 'employee');
+    removeBtn.addEventListener('click', function() {
+        fetch('/remove-employee', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                employeeID: editEmployeeID,
+            })
+        }).then(function(response) {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Error: ' + response.statusText);
+            }
+        })
+        .then(function(text) {
+            alert('Success: ' + '\n\n' + text);
+            editfield = [];
 
-        selectPhys.appendChild(option);
-    }
+            // Fetch the updated list of employees from the server
+            fetch('/get-employees')
+            .then(response => response.json())
+            .then(updatedEmployees => {
+                employees = updatedEmployees;
+            });
+        })
+        .catch(function(error) {
+            alert('There was an error: ' + error.message);
+        });
+    });
 
     document.getElementById('EmployeeForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
-        var physician = document.getElementById('physician').value;
-        var date = document.getElementById('date').value;
-        var reason = document.getElementById('reason').value;
+        // Get all the fields
+        var name = document.getElementById('Name').value;
+        var role = document.getElementById('Role').value;
+        var contact = document.getElementById('contact').value;
+        var gender = document.getElementById('gender').value;
+        var shift = document.getElementById('Shift').value;
+        var address = document.getElementById('address').value;
+        var salary = document.getElementById('Salary').value;
+        var ssn = document.getElementById('ssn').value;
 
-        // Create a new FormData object from the form
+        if (shift === '') {
+            shift = null;
+        }
+
+        if (role === '') {
+            role = "No Assigned Role";
+        }
+
+        // Determine which fields were changed
+        var editfield = [];
+        if (name !== originalValues.Name) editfield.push('Name');
+        if (role !== originalValues.Role) editfield.push('Role');
+        if (contact !== originalValues.TelephoneNumber) editfield.push('TelephoneNumber');
+        if (gender !== originalValues.Gender) editfield.push('Gender');
+        if (shift !== originalValues.Shift) editfield.push('Shift');
+        if (address !== originalValues.Address) editfield.push('Address');
+        if (salary !== originalValues.Salary) editfield.push('Salary');
+        if (ssn !== originalValues.SocialSecurityNumber) editfield.push('SocialSecurityNumber');
+
         var formData = new FormData(this);
-        formData.append('patientID', selectedPatientID);
-        formData.append('physicianID', physician);
-
+        // Create a new FormData object from the form
+        if (ellipsesPressed) {
+            if (editfield.length === 0) {
+                console.log('nochange');
+                return;
+            }
+            formData.append('id', editEmployeeID);
+        }
+        formData.append('name', name);
+        formData.append('role', role);
+        formData.append('contact', contact);
+        formData.append('gender', gender);
+        formData.append('shift', shift);
+        formData.append('address', address);
+        formData.append('salary', salary);
+        formData.append('ssn', ssn);
+        formData.append('editfield', JSON.stringify(editfield));  // Convert editfield to JSON string
         // Send the form data to the server using an AJAX request
-        fetch('/set-consultation', {
+        fetch('/set-employee', {
             method: 'POST',
             body: formData
         })
@@ -139,19 +215,14 @@ window.onload = async function() {
             }
         })
         .then(function(text) {
-            alert('Consultation set: ' + '\n\n' + text);
+            alert('Success: ' + '\n\n' + text);
+            editfield = [];
 
-            // Fetch the updated list of consultations from the server
-            fetch('/get-consultation')
+            // Fetch the updated list of employees from the server
+            fetch('/get-employees')
             .then(response => response.json())
-            .then(updatedConsultations => {
-                consultations = updatedConsultations;
-
-                if (screen === 2)
-                {
-                    createPatientTable(consultations, selectedPatientID, 'consultations');
-                }
-
+            .then(updatedEmployees => {
+                employees = updatedEmployees;
             });
         })
         .catch(function(error) {
@@ -160,6 +231,7 @@ window.onload = async function() {
 
         // Close the modal
         document.getElementById('myModal').style.display = 'none';
+        resetModalValues();
     });
 }
 
@@ -180,8 +252,9 @@ PopulateTable = async function() {
             continue;
         }
 
-        if (roleFilter.value === 'null' && employee.Role) {
-            console.log('whoa1');
+        // Filter the data based on the selected shift
+        var shiftFilter = document.getElementById('shiftfilter');
+        if (shiftFilter.value != employee.Shift && shiftFilter.value != 'all') {
             continue;
         }
 
@@ -229,7 +302,23 @@ PopulateTable = async function() {
         ellipsisButton.style.borderRadius = '5px';
         ellipsisButton.style.cursor = 'pointer';
         ellipsisButton.addEventListener('click', function() {
+            ellipsesPressed = true;
+            editEmployeeID = employee.ID;
+            // Store the original employee details
+            originalValues = {...employee};
 
+            // Display the modal and set the form fields with the employee's details
+            document.getElementById('myModal').style.display = 'block';
+            document.getElementById('Name').value = employee.Name;
+            document.getElementById('Role').value = employee.Role;
+            document.getElementById('contact').value = employee.TelephoneNumber;
+            document.getElementById('gender').value = employee.Gender;
+            document.getElementById('Shift').value = employee.Shift;
+            document.getElementById('address').value = employee.Address;
+            document.getElementById('Salary').value = employee.Salary;
+            document.getElementById('ssn').value = employee.SocialSecurityNumber;
+
+            document.getElementById('removeButton').style.display = 'block';
         });
 
         ellipsisCell.appendChild(ellipsisButton);
@@ -238,138 +327,18 @@ PopulateTable = async function() {
 
         databaseItems.querySelector('tbody').appendChild(row);
     }
+}
 
+resetModalValues = function() {
+    // Reset all the fields in the form
+    document.getElementById('Name').value = '';
+    document.getElementById('Role').value = '';
+    document.getElementById('contact').value = '';
+    document.getElementById('gender').value = '';
+    document.getElementById('Shift').value = '';
+    document.getElementById('address').value = '';
+    document.getElementById('Salary').value = '';
+    document.getElementById('ssn').value = '';
 
-
-    /*
-    for (var i = 0; i < data.length; i++) {
-        ellipsisButton.addEventListener('click',  (function(patient, bedNumber) {
-            return function() {
-                // Create the modal backdrop
-                var modalBackdrop = document.createElement('div');
-                modalBackdrop.style.position = 'fixed';
-                modalBackdrop.style.top = '0';
-                modalBackdrop.style.left = '0';
-                modalBackdrop.style.width = '100%';
-                modalBackdrop.style.height = '100%';
-                modalBackdrop.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-                document.body.appendChild(modalBackdrop);
-
-                // Create the dialog box
-                var dialogBox = document.createElement('div');
-                dialogBox.style.display = 'block';
-                dialogBox.style.width = '20vw';
-                dialogBox.style.backgroundColor = '#fff';
-                dialogBox.style.position = 'fixed';
-                dialogBox.style.top = '15%';
-                dialogBox.style.left = '50%';
-                dialogBox.style.transform = 'translate(-50%, -50%)';
-                dialogBox.style.padding = '2vh';
-                dialogBox.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.1)';
-                dialogBox.style.borderRadius = '10px';
-                modalBackdrop.appendChild(dialogBox);
-
-                // Write the patients name
-                // Create the patient name display
-                var patientNameDisplay = document.createElement('p');
-                patientNameDisplay.textContent = patient ? patient.Name : 'No patient assigned';
-                dialogBox.appendChild(patientNameDisplay);
-
-                // Create the close button
-                var closeButton = document.createElement('button');
-                closeButton.textContent = 'X';
-                closeButton.style.position = 'absolute';
-                closeButton.style.right = '10px';
-                closeButton.style.top = '10px';
-                closeButton.style.backgroundColor = 'transparent';
-                closeButton.style.border = 'none';
-                closeButton.style.fontSize = '20px';
-                closeButton.style.cursor = 'pointer';
-                closeButton.addEventListener('click', function() {
-                    document.body.removeChild(modalBackdrop);
-                });
-                dialogBox.appendChild(closeButton);
-
-                // Create the options
-                var createOptionButton = function(text) {
-                    var optionButton = document.createElement('button');
-                    optionButton.textContent = text;
-                    optionButton.style.display = 'block';
-                    optionButton.style.width = '100%';
-                    optionButton.style.padding = '10px';
-                    optionButton.style.marginTop = '10px';
-                    optionButton.style.backgroundColor = '#007BFF';
-                    optionButton.style.color = 'white';
-                    optionButton.style.border = 'none';
-                    optionButton.style.borderRadius = '5px';
-                    optionButton.style.cursor = 'pointer';
-                    optionButton.addEventListener('click', function() {
-                        // Code to handle the option goes here
-                    });
-                    return optionButton;
-                };
-
-                var viewOrNewOption = createOptionButton(patient ? 'View Patient' : 'Add New Patient');
-                var changeOrExistingOption = createOptionButton(patient ? 'Change Patient' : 'Add Existing Patient');
-                var removeOption = createOptionButton('Remove Patient');
-
-                // Add the options to the dialog box
-                if (patient) {
-                    dialogBox.appendChild(viewOrNewOption);
-                    dialogBox.appendChild(changeOrExistingOption);
-                    dialogBox.appendChild(removeOption);
-                    removeOption.addEventListener('click', (function(patient, bedNumber) {
-                        return function() {
-                            fetch('/set-patient-info', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded',
-                                },
-                                body: new URLSearchParams({
-                                    patientID: patient.ID,
-                                    param: 'BedID',
-                                    value: 'NULL'
-                                })
-                            })
-                                .then(response => response.text())
-                                .then(data => {
-                                // Add follow-up message here
-                                    console.log('Success:', data);
-                                    alert(`Patient ${patient.Name} was successfully removed from bed #${bedNumber}`);
-                                    patientMap[bedNumber] = null;
-                                    populateTable(beds);
-                                    var clickEvent = new Event('click');
-                                    closeButton.dispatchEvent(clickEvent);
-                            })
-                        }
-                    })(patient, bedNumber));
-                }
-                else
-                {
-                    dialogBox.appendChild(viewOrNewOption);
-                    viewOrNewOption.addEventListener('click', (function(bedNumber) {
-                        return function() {
-                            window.location.href = '/patient/PatientManagement?option=addnew&bedNumber=' + bedNumber;
-                        }
-                    })(bedNumber));
-
-                    dialogBox.appendChild(changeOrExistingOption);
-                    changeOrExistingOption.addEventListener('click', (function(bedNumber) {
-                        return function() {
-                            window.location.href = '/patient/PatientManagement?option=addexisting&bedNumber=' + bedNumber;
-                        }
-                    })(bedNumber));
-                }
-
-            }
-        })(patient, data[i].ID));
-        ellipsisCell.appendChild(ellipsisButton);
-        row.appendChild(ellipsisCell);
-
-
-        databaseItems.querySelector('tbody').appendChild(row);
-
-    }
-
-     */
-    }
+    originalValues = [];
+}
