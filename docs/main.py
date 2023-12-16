@@ -53,6 +53,7 @@ def add_patient():
     ssn = request.form.get('ssn') or None
     admissionDate = request.form.get('admissionDate') or None
     pcp = request.form.get('pcp') or None
+    bed = request.form.get('bed') or None
 
     # Get the maximum ID from the Patient table
     cursor.execute("SELECT MAX(ID) FROM Patient")
@@ -67,11 +68,15 @@ def add_patient():
     sql = "INSERT INTO Patient (ID, Name, Gender, DOB, Address, PhoneNumber, SocialSecurityNumber, AdmissionDate, PrimaryPhysicianID) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
     val = (new_id, name, gender, dob, address, contact, ssn, admissionDate, pcp)
     cursor.execute(sql, val)
-
-    # Commit the transaction
     db.commit()
 
-    return "Patient added successfully!"
+    if bed:
+        sql = f"UPDATE Patient SET BedID = {bed} WHERE ID = {new_id};"
+        cursor.execute(sql)
+        db.commit()
+        return f"Patient added successfully to bed with ID {bed}!"
+    else:
+        return "Patient added successfully!"
 
 @main.route('/get-beds')
 def get_beds():
@@ -419,7 +424,7 @@ def set_consultation():
     # Get form data
     patientID = request.form.get('patientID')
     physicianID = request.form.get('physicianID')
-    date = request.form.get('date')
+    date = request.form.get('datetime')
     reason = request.form.get('reason')
 
     # Insert data into the database

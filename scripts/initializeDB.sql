@@ -158,7 +158,7 @@ CREATE TABLE Consultation (
     PatientID INT,
     PhysicianID INT,
     ConsultationType VARCHAR(255),
-    DateOfConsult DATE,
+    DateOfConsult DATETIME,
     Notes VARCHAR(255),
     FOREIGN KEY (PatientID) REFERENCES Patient(ID),
     FOREIGN KEY (PhysicianID) REFERENCES Physician(ID),
@@ -168,7 +168,7 @@ CREATE TABLE Consultation (
 CREATE TABLE Diagnosis (
     PatientID INT,
     PhysicianID INT,
-    DateOfDiagnosis DATE,
+    DateOfDiagnosis DATETIME,
     IllnessID INT,
     Comments VARCHAR(255),
     FOREIGN KEY(IllnessID) REFERENCES Illness(ID),
@@ -233,7 +233,7 @@ CREATE TABLE MedicationInteractions (
 CREATE TABLE Prescription (
 	PatientID INT,
 	PhysicianID INT,
-    DateOfOrder DATE,
+    DateOfOrder DATETIME,
     MedicineID INT,
     Frequency INT,
     Duration INT,

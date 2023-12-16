@@ -10,7 +10,13 @@ window.onload = async function() {
 
     let response = await fetch('/get-patients');
     patients = await response.json();
-    let selectedPatientID = patients[0].ID;
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var selectedPatientID = urlParams.get('patient');
+    // If there is a bed number, append it to the form data
+    if (!selectedPatientID) {
+        selectedPatientID = patients[0].ID;
+    }
 
     response = await fetch('/get-patient-diagnosis', {
         method: 'POST',
@@ -25,6 +31,7 @@ window.onload = async function() {
 
     response = await fetch('/get-consultation');
     consultations = await response.json();
+
 
     // Get the select element
     let selectPhys = document.getElementById("pcp");
@@ -55,6 +62,14 @@ window.onload = async function() {
 
             // Create a new FormData object from the form
             var formData = new FormData(this);
+
+            // Check if there is a ?bed=[number] in the URL
+            var bedNumber = urlParams.get('bed');
+
+            // If there is a bed number, append it to the form data
+            if (bedNumber) {
+                formData.append('bed', bedNumber);
+            }
 
             // Send the form data to the server using an AJAX request
             fetch(this.action, {
@@ -158,6 +173,7 @@ window.onload = async function() {
     parentElement.appendChild(consultationsTableLink);
 
     document.getElementById('patientSelect').appendChild(select);
+
     var modal = document.getElementById("myModal");
     var btn = document.getElementById("scheduleButton");
     var span = document.getElementsByClassName("close")[0];
@@ -190,7 +206,9 @@ window.onload = async function() {
 
     var physician = document.getElementById('physician').value;
     var date = document.getElementById('date').value;
+    var time = document.getElementById('time').value;
     var reason = document.getElementById('reason').value;
+    var datetime = date + 'T' + time;
 
     // Create a new FormData object from the form
     var formData = new FormData(this);
@@ -200,7 +218,12 @@ window.onload = async function() {
     // Send the form data to the server using an AJAX request
     fetch('/set-consultation', {
         method: 'POST',
-        body: formData
+        body: new URLSearchParams({
+            patientID: selectedPatientID,
+            physicianID: physician,
+            datetime: datetime,
+            reason: reason,
+        })
     })
     .then(function(response) {
         if (response.ok) {
@@ -232,6 +255,8 @@ window.onload = async function() {
     // Close the modal
     document.getElementById('myModal').style.display = 'none';
 });
+
+    document.getElementById('selectPatient').value = selectedPatientID;
 }
 
 getName = function(ID, Table) {

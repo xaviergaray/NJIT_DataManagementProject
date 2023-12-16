@@ -13,7 +13,7 @@ window.onload = async function() {
 
     // Fetch all patients and store them in a map for quick lookup
     let responsePatients = await fetch('/get-patients');
-    let patients = await responsePatients.json();
+    var patients = await responsePatients.json();
     let patientMap = {};
     for (let patient of patients) {
         patientMap[patient.BedID] = patient;
@@ -161,6 +161,11 @@ window.onload = async function() {
                     // Add the options to the dialog box
                     if (patient) {
                         dialogBox.appendChild(viewOrNewOption);
+                        viewOrNewOption.addEventListener('click', (function(patient) {
+                            return function() {
+                                window.location.href = '/patient?patient=' + patient.ID;
+                            }
+                        })(patient));
                         dialogBox.appendChild(changeOrExistingOption);
                         dialogBox.appendChild(removeOption);
                         removeOption.addEventListener('click', (function(patient, bedNumber) {
@@ -194,17 +199,112 @@ window.onload = async function() {
                         dialogBox.appendChild(viewOrNewOption);
                         viewOrNewOption.addEventListener('click', (function(bedNumber) {
                             return function() {
-                                window.location.href = '/patient/PatientManagement?option=addnew&bedNumber=' + bedNumber;
+                                window.location.href = '/patient?bed=' + bedNumber;
                             }
                         })(bedNumber));
 
                         dialogBox.appendChild(changeOrExistingOption);
-                        changeOrExistingOption.addEventListener('click', (function(bedNumber) {
-                            return function() {
-                                window.location.href = '/patient/PatientManagement?option=addexisting&bedNumber=' + bedNumber;
-                            }
-                        })(bedNumber));
                     }
+
+                    changeOrExistingOption.addEventListener('click', (function(patient, bedNumber) {
+                        return function() {
+                            let newSelectPatientDrop = document.createElement('select');
+
+                            for (var i = 0; i < patients.length; i++) {
+                                let option = document.createElement('option');
+                                option.value = patients[i].ID;
+                                option.text = patients[i].Name;
+                                newSelectPatientDrop.appendChild(option);
+                            }
+
+                            // Remove the old dropdown if it exists
+                            let oldDropdown = dialogBox.querySelector('select');
+                            if (oldDropdown) {
+                                dialogBox.removeChild(oldDropdown);
+                            }
+
+                            // Append the new dropdown
+                            dialogBox.appendChild(newSelectPatientDrop);
+
+                            let newAddButton = document.createElement('button');
+                            newAddButton.textContent = 'Add';
+                            newAddButton.addEventListener('click', function() {
+                                // Remove the current patient if there is one
+                                if(patient) {
+                                    fetch('/set-patient-info', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        body: new URLSearchParams({
+                                            patientID: patient.ID,
+                                            param: 'BedID',
+                                            value: 'NULL'
+                                        })
+                                    })
+                                        .then(response => response.text())
+                                        .then(data => {
+                                        // Add follow-up message here
+                                            console.log('Success:', data);
+                                            alert(`Patient ${patient.Name} was successfully removed from bed #${bedNumber}`);
+                                            patientMap[bedNumber] = null;
+
+                                            // Add this patient
+                                            fetch('/set-patient-info', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                                },
+                                                body: new URLSearchParams({
+                                                    patientID: newSelectPatientDrop.value,
+                                                    param: 'BedID',
+                                                    value: bedNumber
+                                                })
+                                            })
+                                                .then(response => response.text())
+                                                .then(data => {
+                                                // Add follow-up message here
+                                                    console.log('Success:', data);
+                                                    alert(`Patient with ID ${newSelectPatientDrop.value} was successfully assigned to bed #${bedNumber}`);
+                                                    let newAddedPatient;
+                                                    patientMap[bedNumber] = patients[newSelectPatientDrop.value - 1];
+                                                    populateTable(beds);
+                                                    var clickEvent = new Event('click');
+                                                    closeButton.dispatchEvent(clickEvent);
+                                            })
+                                    })
+                                } else
+                                {
+                                    // Only add this patient
+                                    // Add this patient
+                                    fetch('/set-patient-info', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                        },
+                                        body: new URLSearchParams({
+                                            patientID: newSelectPatientDrop.value,
+                                            param: 'BedID',
+                                            value: bedNumber
+                                        })
+                                    })
+                                        .then(response => response.text())
+                                        .then(data => {
+                                        // Add follow-up message here
+                                            console.log('Success:', data);
+                                            alert(`Patient with ID ${newSelectPatientDrop.value} was successfully assigned to bed #${bedNumber}`);
+                                            patientMap[bedNumber] = patients[newSelectPatientDrop.value - 1];
+                                            populateTable(beds);
+                                            var clickEvent = new Event('click');
+                                            closeButton.dispatchEvent(clickEvent);
+                                    })
+                                }
+
+                            });
+
+                            dialogBox.appendChild(newAddButton);
+                        }
+                    })(patient, bedNumber));
 
                 }
             })(patient, data[i].ID));

@@ -296,6 +296,7 @@ function createAssignButton(text, patientID, callback, fieldValuesTitle) {
                 }
             }
 
+
         }
         container.appendChild(select);
 
